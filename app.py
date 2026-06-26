@@ -731,68 +731,6 @@ def live_upload(tournament):
 
 
 
-@app.route("/live/<tournament>", methods=["GET","POST"])
-def live_upload(tournament):
-    tpath=os.path.join(TOURNAMENT_DIR,tournament)
-    if not os.path.exists(tpath):
-        abort(404)
-
-    live_dir=os.path.join(UPLOAD_DIR,"LIVE_"+tournament)
-    os.makedirs(live_dir,exist_ok=True)
-
-    log=os.path.join(tpath,"live_processed_files.txt")
-    done=set()
-    if os.path.exists(log):
-        done=set(x.strip() for x in open(log,encoding="utf-8") if x.strip())
-
-    if request.method=="POST":
-        stamp=datetime.now().strftime("%Y-%m-%d-%H%M%S")
-        batch=os.path.join(live_dir,stamp)
-        os.makedirs(batch,exist_ok=True)
-
-        saved=0
-        skipped=0
-
-        for f in request.files.getlist("photos"):
-            if not f or not f.filename:
-                continue
-            name=secure_filename(f.filename)
-            ext=os.path.splitext(name)[1].lower()
-            if ext not in UPLOAD_EXTENSIONS:
-                continue
-            if name in done:
-                skipped+=1
-                continue
-            f.save(os.path.join(batch,name))
-            done.add(name)
-            saved+=1
-
-        with open(log,"w",encoding="utf-8") as out:
-            for name in sorted(done):
-                out.write(name+"\n")
-
-        if saved>0 and PROCESSOR_AVAILABLE:
-            roster=""
-            rp=os.path.join(tpath,"mobile_roster.txt")
-            if os.path.exists(rp):
-                roster=open(rp,encoding="utf-8").read()
-
-            job="LIVE_"+tournament+"_"+stamp
-            JOB_STATUS[job]={"done":0,"total":saved,"percent":0,"message":"Live upload queued","complete":False,"error":""}
-
-            thread=threading.Thread(
-                target=run_processing_job,
-                args=(job,batch,tpath,roster),
-                daemon=True
-            )
-            thread.start()
-            return redirect(url_for("processing",job_name=job))
-
-        return render_template("live.html",tournament=tournament,message=f"Saved {saved}, skipped {skipped}",cards=build_cards(tournament))
-
-    return render_template("live.html",tournament=tournament,message="Add new photos to this same tournament.",cards=build_cards(tournament))
-
-
 @app.route("/manifest.json")
 def manifest():
     return send_from_directory("static", "manifest.json")
