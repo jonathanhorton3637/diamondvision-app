@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ filename }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="photo-view-body">
+
+<div class="photo-viewer">
+
+    <div class="photo-topbar">
+        <a href="/gallery/{{ tournament }}/{{ folder }}">← Back</a>
+        <span>{{ index + 1 }} / {{ total }}</span>
+    </div>
+
+    <img class="full-photo" src="/image/{{ tournament }}/{{ folder }}/{{ filename }}">
+
+    <div class="photo-actions">
+
+        {% if prev_file %}
+        <a href="/photo/{{ tournament }}/{{ folder }}?file={{ prev_file }}">← Previous</a>
+        {% else %}
+        <span></span>
+        {% endif %}
+
+        {% if next_file %}
+        <a href="/photo/{{ tournament }}/{{ folder }}?file={{ next_file }}">Next →</a>
+        {% else %}
+        <span></span>
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

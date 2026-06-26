@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DiamondVision</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="phone">
+
+    <div class="brand">
+        <span>💎</span>
+        DiamondVision
+    </div>
+
+    <div class="small-label">
+        AI Photo Sorting for Sports Photographers
+    </div>
+
+    <a class="hero-button" href="/new">
+        + START NEW JOB
+    </a>
+
+    {% if not processor_available %}
+    <div class="warning-card">
+        Viewer mode available. Processing engine not loaded.
+    </div>
+    {% endif %}
+
+    {% if tournaments %}
+    <a class="cover-card" href="/tournament/{{ tournaments[0].name }}">
+
+        {% if tournaments[0].cover %}
+        <img src="{{ tournaments[0].cover }}">
+        {% else %}
+        <div class="cover-placeholder">📸</div>
+        {% endif %}
+
+        <div class="cover-overlay">
+            <strong>{{ tournaments[0].name }}</strong>
+            <span>{{ tournaments[0].best }} best shots · {{ tournaments[0].players }} players</span>
+        </div>
+
+    </a>
+    {% endif %}
+
+    <div class="section-row">
+        <h2>Recent Tournaments</h2>
+        <span>{{ tournaments|length }} Events</span>
+    </div>
+
+    {% for t in tournaments %}
+
+    <a class="big-card" href="/tournament/{{ t.name }}">
+
+        <div class="thumb">
+
+            {% if t.cover %}
+            <img src="{{ t.cover }}">
+            {% else %}
+            📸
+            {% endif %}
+
+        </div>
+
+        <div>
+            <strong>{{ t.name }}</strong>
+            <p>{{ t.best }} Best Shots • {{ t.players }} Players</p>
+        </div>
+
+        <div class="chevron">›</div>
+
+    </a>
+
+    {% endfor %}
+
+</div>
+
+<div class="bottom-nav">
+
+    <a class="active" href="/">
+        🏠
+        <span>Home</span>
+    </a>
+
+    <a href="/new">
+        ➕
+        <span>Import</span>
+    </a>
+
+    <span>
+        👥
+        <small>Teams</small>
+    </span>
+
+    <span>
+        ⭐
+        <small>Best</small>
+    </span>
+
+    <span>
+        ☰
+        <small>More</small>
+    </span>
+
+</div>
+
+<script>
+if ("serviceWorker" in navigator){
+
+}
+</script>
+
+</body>
+</html>

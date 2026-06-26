@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Job</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="phone">
+
+    <a class="back" href="/">← Back</a>
+
+    <div class="brand">
+        <span>💎</span>
+        New Job
+    </div>
+
+    <div class="small-label">
+        Import photos, add roster, and start sorting
+    </div>
+
+    {% if not processor_available %}
+    <div class="warning-card">
+        Viewer mode only. Install processing packages before using upload/process.
+    </div>
+    {% endif %}
+
+    <form class="form-card" method="POST" enctype="multipart/form-data">
+
+        <label>Tournament Name</label>
+        <input name="tournament" placeholder="Texas Glory Showcase">
+
+        <label>Team Name</label>
+        <input name="team" placeholder="Texas Insanity">
+
+        <label>Roster</label>
+        <textarea name="roster" rows="8" placeholder="12 Peighton&#10;7 Avery&#10;18 Olivia&#10;22 Emma"></textarea>
+
+        <label>Add Photos</label>
+
+        <input
+            id="photo-input"
+            type="file"
+            name="photos"
+            multiple
+            accept="image/jpeg,image/png,.jpg,.jpeg,.png,.nef"
+        >
+
+        <div id="file-count" class="file-count">
+            No files selected
+        </div>
+
+        <button type="submit">
+            START DIAMONDVISION
+        </button>
+
+    </form>
+
+</div>
+
+<div class="bottom-nav">
+
+    <a href="/">
+        🏠
+        <span>Home</span>
+    </a>
+
+    <a class="active" href="/new">
+        ➕
+        <span>Import</span>
+    </a>
+
+    <span>
+        👥
+        <small>Teams</small>
+    </span>
+
+    <span>
+        ⭐
+        <small>Best</small>
+    </span>
+
+    <span>
+        ☰
+        <small>More</small>
+    </span>
+
+</div>
+
+<script>
+const input = document.getElementById("photo-input");
+const counter = document.getElementById("file-count");
+
+input.addEventListener("change", function(){
+    const count = this.files.length;
+
+    if(count === 0){
+        counter.innerText = "No files selected";
+    } else if(count === 1){
+        counter.innerText = "1 file selected";
+    } else {
+        counter.innerText = count + " files selected";
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Processing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="phone">
+
+    <div class="brand">
+        <span>💎</span>
+        DiamondVision
+    </div>
+
+    <div class="small-label">
+        Processing Photos
+    </div>
+
+    <div class="processing-card">
+
+        <h1 id="percent">0%</h1>
+
+        <div class="progress-shell">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+
+        <p id="message">Starting...</p>
+
+        <div class="progress-meta">
+            <span id="done">0</span>
+            /
+            <span id="total">0</span>
+            photos
+        </div>
+
+        <a id="results-button" class="hero-button hidden" href="/tournament/{{ job_name }}">
+            VIEW RESULTS
+        </a>
+
+    </div>
+
+</div>
+
+<script>
+function updateStatus(){
+    fetch("/api/status/{{ job_name }}")
+        .then(response => response.json())
+        .then(data => {
+
+            document.getElementById("percent").innerText = data.percent + "%";
+            document.getElementById("progress-bar").style.width = data.percent + "%";
+            document.getElementById("message").innerText = data.message;
+            document.getElementById("done").innerText = data.done;
+            document.getElementById("total").innerText = data.total;
+
+            if(data.error){
+                document.getElementById("message").innerText = "ERROR: " + data.error;
+                document.getElementById("results-button").classList.remove("hidden");
+                return;
+            }
+
+            if(data.complete){
+                document.getElementById("results-button").classList.remove("hidden");
+                return;
+            }
+
+            setTimeout(updateStatus, 1000);
+        })
+        .catch(() => {
+            document.getElementById("message").innerText = "Waiting for server...";
+            setTimeout(updateStatus, 1500);
+        });
+}
+
+updateStatus();
+</script>
+
+</body>
+</html>

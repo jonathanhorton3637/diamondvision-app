@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Review Queue</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DiamondVision">
+    <meta name="theme-color" content="#5634f5">
+
+    <link rel="apple-touch-icon" href="/static/icon-512.png">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="phone">
+
+    <a class="back" href="/tournament/{{ tournament }}">← Back</a>
+
+    <h1>Review Queue</h1>
+
+    <div class="small-label">
+        Unknown players and low-confidence OCR
+    </div>
+
+    {% if not items %}
+        <div class="summary-card">
+            <strong>All Clear</strong>
+            <p>No review items found.</p>
+        </div>
+    {% endif %}
+
+    <div class="photo-grid">
+        {% for item in items %}
+        <div class="review-tile">
+            <img src="/image/{{ tournament }}/{{ item.folder }}/{{ item.file }}">
+
+            <div class="review-info">
+                <strong>{{ item.reason }}</strong>
+                <p>{{ item.file }}</p>
+            </div>
+
+            <form method="POST" action="/review-move/{{ tournament }}/{{ item.folder }}/{{ item.file }}">
+                <select name="target_player">
+                    {% for player in players %}
+                    <option value="{{ player }}">{{ player }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Move</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<div class="bottom-nav">
+    <a href="/">
+        🏠
+        <span>Home</span>
+    </a>
+
+    <a href="/new">
+        ➕
+        <span>Import</span>
+    </a>
+
+    <span class="active">
+        👥
+        <small>Review</small>
+    </span>
+
+    <span>
+        ⭐
+        <small>Best</small>
+    </span>
+
+    <span>
+        ☰
+        <small>More</small>
+    </span>
+</div>
+
+</body>
+</html>

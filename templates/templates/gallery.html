@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ folder }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="phone">
+
+    <a class="back" href="/tournament/{{ tournament }}">← Back</a>
+
+    <h1>{{ folder }}</h1>
+
+    {% if subfolders %}
+
+    <div class="section-row">
+        <h2>Players / Folders</h2>
+        <span>{{ subfolders|length }}</span>
+    </div>
+
+    {% for sub in subfolders %}
+    <a class="player-card" href="{{ sub.url }}">
+
+        <div class="player-avatar">
+
+            {% if sub.preview %}
+                <img src="/image/{{ tournament }}/{{ folder }}/{{ sub.name }}/{{ sub.preview }}">
+            {% else %}
+                👤
+            {% endif %}
+
+        </div>
+
+        <div>
+            <strong>{{ sub.name }}</strong>
+            <p>{{ sub.count }} photos</p>
+        </div>
+
+        <div class="chevron">›</div>
+
+    </a>
+    {% endfor %}
+
+    {% endif %}
+
+    {% if images %}
+
+    <div class="section-row">
+        <h2>Photos</h2>
+        <span>{{ images|length }} Photos</span>
+    </div>
+
+    <div class="photo-grid">
+        {% for image in images %}
+        <a href="/photo/{{ tournament }}/{{ folder }}?file={{ image }}">
+            <img src="/image/{{ tournament }}/{{ folder }}/{{ image }}" loading="lazy">
+        </a>
+        {% endfor %}
+    </div>
+
+    {% endif %}
+
+</div>
+
+<div class="bottom-nav">
+
+    <a href="/">
+        🏠
+        <span>Home</span>
+    </a>
+
+    <a href="/new">
+        ➕
+        <span>Import</span>
+    </a>
+
+    <span class="active">
+        👥
+        <small>Teams</small>
+    </span>
+
+    <span>
+        ⭐
+        <small>Best</small>
+    </span>
+
+    <span>
+        ☰
+        <small>More</small>
+    </span>
+
+</div>
+
+</body>
+</html>

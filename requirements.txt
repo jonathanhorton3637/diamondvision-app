@@ -1,0 +1,15 @@
+flask
+opencv-python-headless
+easyocr
+torch
+torchvision
+numpy
+pillow
+scipy
+scikit-image
+python-bidi
+pyclipper
+shapely
+ninja
+rawpy
+imageio

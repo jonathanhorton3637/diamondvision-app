@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ tournament }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DiamondVision">
+    <meta name="theme-color" content="#5634f5">
+
+    <link rel="apple-touch-icon" href="/static/icon-512.png">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="phone">
+
+    <a class="back" href="/">← Back</a>
+
+    <h1>{{ tournament }}</h1>
+
+    <div class="export-card">
+        <strong>Dropbox Parent Export</strong>
+        <p>Create a ZIP of all player folders for Dropbox sharing.</p>
+
+        <form method="POST" action="/export-dropbox/{{ tournament }}">
+            <button type="submit">CREATE DROPBOX ZIP</button>
+        </form>
+
+        {% if export_ready %}
+        <a class="download-button" href="/download-dropbox/{{ tournament }}">
+            DOWNLOAD DROPBOX ZIP
+        </a>
+        {% endif %}
+    </div>
+
+    {% if summary %}
+    <div class="summary-card">
+        <strong>Processing Complete</strong>
+
+        <div class="summary-grid">
+            <span>Total<br><b>{{ summary.total }}</b></span>
+            <span>Best<br><b>{{ summary.best }}</b></span>
+            <span>Keep<br><b>{{ summary.keep }}</b></span>
+            <span>Dupes<br><b>{{ summary.duplicates }}</b></span>
+        </div>
+    </div>
+    {% endif %}
+
+    {% for card in cards %}
+        {% if card.name == "BestOfTournament" and card.preview %}
+        <a class="cover-card" href="{{ card.url }}">
+            <img src="{{ card.preview }}">
+            <div class="cover-overlay">
+                <strong>Best Of Tournament</strong>
+                <span>{{ card.count }} top images</span>
+            </div>
+        </a>
+        {% endif %}
+    {% endfor %}
+
+    <div class="section-row">
+        <h2>Team / Players</h2>
+        <span>Roster View</span>
+    </div>
+
+    {% for card in cards %}
+        {% if card.name == "Players" %}
+        <a class="big-card" href="{{ card.url }}">
+
+            <div class="thumb">
+                {% if card.preview %}
+                <img src="{{ card.preview }}">
+                {% else %}
+                👥
+                {% endif %}
+            </div>
+
+            <div>
+                <strong>Players</strong>
+                <p>{{ card.count }} player folders</p>
+            </div>
+
+            <div class="chevron">›</div>
+
+        </a>
+        {% endif %}
+    {% endfor %}
+
+    <div class="section-row">
+        <h2>Photo Buckets</h2>
+        <span>AI Sorted</span>
+    </div>
+
+    <div class="feature-grid">
+
+    {% for card in cards %}
+        {% if card.name != "Players" %}
+        <a class="feature-card" href="{{ card.url }}">
+
+            {% if card.preview %}
+            <img src="{{ card.preview }}" class="feature-img">
+            {% else %}
+            <div class="feature-icon">📸</div>
+            {% endif %}
+
+            <strong>{{ card.label }}</strong>
+            <p>{{ card.subtitle }}</p>
+            <span>{{ card.count }} photos</span>
+
+        </a>
+        {% endif %}
+    {% endfor %}
+
+    </div>
+
+</div>
+
+<div class="bottom-nav">
+
+    <a href="/">
+        🏠
+        <span>Home</span>
+    </a>
+
+    <a href="/new">
+        ➕
+        <span>Import</span>
+    </a>
+
+    <span class="active">
+        👥
+        <small>Teams</small>
+    </span>
+
+    <span>
+        ⭐
+        <small>Best</small>
+    </span>
+
+    <span>
+        ☰
+        <small>More</small>
+    </span>
+
+</div>
+
+</body>
+</html>
