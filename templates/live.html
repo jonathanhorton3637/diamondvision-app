@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Mode</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="phone">
+
+    <a class="back" href="/tournament/{{ tournament }}">← Back</a>
+
+    <div class="brand">
+        <span>🔴</span>
+        Live Mode
+    </div>
+
+    <div class="small-label">{{ tournament }}</div>
+
+    <div class="admin-card">
+        <strong>Live Upload</strong>
+        <p>{{ message }}</p>
+
+        <form method="POST" enctype="multipart/form-data">
+            <label>Add New Photos</label>
+
+            <input
+                id="photo-input"
+                type="file"
+                name="photos"
+                multiple
+                accept="image/jpeg,image/png,.jpg,.jpeg,.png,.nef"
+            >
+
+            <div id="file-count" class="file-count">
+                No files selected
+            </div>
+
+            <button type="submit">UPLOAD TO LIVE GAME</button>
+        </form>
+    </div>
+
+    {% for card in cards %}
+    <a class="big-card" href="{{ card.url }}">
+        <div class="thumb">
+            {% if card.preview %}
+            <img src="{{ card.preview }}">
+            {% else %}
+            📸
+            {% endif %}
+        </div>
+
+        <div>
+            <strong>{{ card.label }}</strong>
+            <p>{{ card.count }} photos</p>
+        </div>
+
+        <div class="chevron">›</div>
+    </a>
+    {% endfor %}
+
+</div>
+
+<script>
+const input = document.getElementById("photo-input");
+const counter = document.getElementById("file-count");
+
+input.addEventListener("change", function(){
+    const count = this.files.length;
+    counter.innerText = count === 1 ? "1 file selected" : count + " files selected";
+});
+</script>
+
+</body>
+</html>
