@@ -731,6 +731,22 @@ def live_upload(tournament):
 
 
 
+
+@app.route("/admin")
+def admin():
+    tournaments=[]
+    if os.path.exists(TOURNAMENT_DIR):
+        for d in sorted(os.listdir(TOURNAMENT_DIR), reverse=True):
+            if os.path.isdir(os.path.join(TOURNAMENT_DIR,d)):
+                tournaments.append(d)
+    return render_template(
+        "admin.html",
+        tournaments=tournaments,
+        processor_available=PROCESSOR_AVAILABLE,
+        processor_error=PROCESSOR_ERROR
+    )
+
+
 @app.route("/manifest.json")
 def manifest():
     return send_from_directory("static", "manifest.json")

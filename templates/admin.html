@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DiamondVision Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="phone">
+
+    <a class="back" href="/">← Back</a>
+
+    <div class="brand">
+        <span>💎</span>
+        Admin
+    </div>
+
+    <div class="admin-card">
+        <strong>System Health</strong>
+        <p>Processor: {{ "Available" if processor_available else "Unavailable" }}</p>
+        {% if processor_error %}
+        <p>{{ processor_error }}</p>
+        {% endif %}
+        <a class="download-button" href="/health">HEALTH CHECK</a>
+    </div>
+
+    <div class="section-row">
+        <h2>Tournaments</h2>
+        <span>{{ tournaments|length }}</span>
+    </div>
+
+    {% for tournament in tournaments %}
+    <div class="admin-card">
+        <strong>{{ tournament }}</strong>
+
+        <a class="download-button" href="/tournament/{{ tournament }}">OPEN</a>
+
+        <a class="download-button" href="/live/{{ tournament }}">LIVE MODE</a>
+
+        <a class="download-button" href="/review/{{ tournament }}">REVIEW</a>
+
+        <form method="POST" action="/export-dropbox/{{ tournament }}">
+            <button type="submit">REBUILD DROPBOX ZIP</button>
+        </form>
+    </div>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>
