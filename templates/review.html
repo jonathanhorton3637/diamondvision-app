@@ -32,8 +32,30 @@
         </div>
     {% endif %}
 
+    {% for group_name, group_items in groups.items() %}
+    <div class="section-row">
+        <h2>{{ group_name }}</h2>
+        <span>{{ group_items|length }}</span>
+    </div>
+
+    <form class="admin-card" method="POST" action="/review-group-move/{{ tournament }}">
+        {% for item in group_items %}
+        <input type="hidden" name="files" value="{{ item.folder }}||{{ item.file }}">
+        {% endfor %}
+
+        <strong>Apply to all in this group</strong>
+
+        <select name="target_player">
+            {% for player in players %}
+            <option value="{{ player }}">{{ player }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">MOVE ALL {{ group_items|length }}</button>
+    </form>
+
     <div class="photo-grid">
-        {% for item in items %}
+        {% for item in group_items %}
         <div class="review-tile">
             <img src="/image/{{ tournament }}/{{ item.folder }}/{{ item.file }}">
 
@@ -54,6 +76,7 @@
         </div>
         {% endfor %}
     </div>
+    {% endfor %}
 
 </div>
 

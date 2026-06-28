@@ -605,7 +605,8 @@ def review_queue(tournament):
                         items.append({
                             "folder": folder,
                             "file": file,
-                            "reason": f"Low OCR confidence: {conf:.2f}"
+                            "reason": f"Low OCR confidence: {conf:.2f}",
+                            "ocr_number": row.get("OCR Number", "")
                         })
 
     players = []
@@ -618,10 +619,28 @@ def review_queue(tournament):
             if os.path.isdir(full):
                 players.append(item)
 
+    groups = {}
+
+    for item in items:
+        reason = item.get("reason", "Review")
+        ocr_number = item.get("ocr_number", "")
+
+        if ocr_number:
+            key = f"Likely #{ocr_number}"
+        elif "Low OCR confidence" in reason:
+            key = "Low-confidence OCR"
+        elif "Unknown" in reason:
+            key = "Unknown player"
+        else:
+            key = reason
+
+        groups.setdefault(key, []).append(item)
+
     return render_template(
         "review.html",
         tournament=tournament,
         items=items,
+        groups=groups,
         players=players
     )
 
@@ -663,6 +682,55 @@ def review_move(tournament, folder, filename):
         dest = os.path.join(target_folder, f"{name}_{stamp}{ext}")
 
     shutil.move(source, dest)
+
+    return redirect(url_for("review_queue", tournament=tournament))
+
+
+
+
+@app.route("/review-group-move/<tournament>", methods=["POST"])
+def review_group_move(tournament):
+    target_player = request.form.get("target_player", "").strip()
+    files = request.form.getlist("files")
+
+    if not target_player or not files:
+        return redirect(url_for("review_queue", tournament=tournament))
+
+    if "/Players/" in target_player:
+        target_folder = os.path.join(
+            TOURNAMENT_DIR,
+            tournament,
+            "Teams",
+            *target_player.split("/")
+        )
+    else:
+        target_folder = os.path.join(
+            TOURNAMENT_DIR,
+            tournament,
+            "Players",
+            safe_name(target_player)
+        )
+
+    os.makedirs(target_folder, exist_ok=True)
+
+    for item in files:
+        if "||" not in item:
+            continue
+
+        folder, filename = item.split("||", 1)
+        source = os.path.join(TOURNAMENT_DIR, tournament, folder, filename)
+
+        if not os.path.exists(source):
+            continue
+
+        dest = os.path.join(target_folder, filename)
+
+        if os.path.exists(dest):
+            name, ext = os.path.splitext(filename)
+            stamp = datetime.now().strftime("%H%M%S%f")
+            dest = os.path.join(target_folder, f"{name}_{stamp}{ext}")
+
+        shutil.move(source, dest)
 
     return redirect(url_for("review_queue", tournament=tournament))
 
