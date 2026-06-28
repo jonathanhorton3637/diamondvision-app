@@ -146,6 +146,7 @@ def build_cards(name):
         ("BestOfTournament", "Best Shots", "Top tournament images"),
         ("Favorites", "Favorites", "Client-ready picks"),
         ("Players", "Players", "Sorted by roster/player"),
+        ("Teams", "Teams", "Two-team sorted player folders"),
         ("Best", "Best", "Highest scoring photos"),
         ("Keep", "Keep", "Usable photos"),
         ("Reject", "Reject", "Rejected photos"),
@@ -725,11 +726,35 @@ def live_upload(tournament):
             thread.start()
             return redirect(url_for("processing",job_name=job))
 
-        return render_template("live.html",tournament=tournament,message=f"Saved {saved}, skipped {skipped}",cards=build_cards(tournament))
+        return redirect(url_for("live_upload", tournament=tournament))
 
-    return render_template("live.html",tournament=tournament,message="Add new photos to this same tournament.",cards=build_cards(tournament))
+    live_stats = {
+        "best": count_images(os.path.join(tpath, "Best")),
+        "keep": count_images(os.path.join(tpath, "Keep")),
+        "unknown": count_images(os.path.join(tpath, "Players", "Unknown")),
+        "processed": len(done)
+    }
+
+    return render_template(
+        "live.html",
+        tournament=tournament,
+        message="Add new photos to this same tournament.",
+        cards=build_cards(tournament),
+        live_stats=live_stats
+    )
 
 
+
+
+
+@app.route("/more")
+def more_menu():
+    tournaments=[]
+    if os.path.exists(TOURNAMENT_DIR):
+        for d in sorted(os.listdir(TOURNAMENT_DIR), reverse=True):
+            if os.path.isdir(os.path.join(TOURNAMENT_DIR,d)):
+                tournaments.append(d)
+    return render_template("more.html", tournaments=tournaments)
 
 
 @app.route("/admin")
