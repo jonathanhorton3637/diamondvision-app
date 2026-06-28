@@ -43,6 +43,10 @@
         <form method="POST" action="/export-dropbox/{{ tournament }}">
             <button type="submit">REBUILD DROPBOX ZIP</button>
         </form>
+
+        <form method="POST" action="/sync-dropbox/{{ tournament }}">
+            <button type="submit">SYNC TO DROPBOX</button>
+        </form>
     </div>
     {% endfor %}
 
