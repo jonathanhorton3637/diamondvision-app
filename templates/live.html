@@ -18,6 +18,22 @@
 
     <div class="small-label">{{ tournament }}</div>
 
+    <div class="summary-card">
+        <strong>Live Dashboard</strong>
+        <div class="summary-grid">
+            <span>Processed<br><b>{{ live_stats.processed if live_stats else 0 }}</b></span>
+            <span>Best<br><b>{{ live_stats.best if live_stats else 0 }}</b></span>
+            <span>Keep<br><b>{{ live_stats.keep if live_stats else 0 }}</b></span>
+            <span>Unknown<br><b>{{ live_stats.unknown if live_stats else 0 }}</b></span>
+        </div>
+
+        <a class="download-button" href="/review/{{ tournament }}">REVIEW UNKNOWN</a>
+
+        <form method="POST" action="/export-dropbox/{{ tournament }}">
+            <button type="submit">REBUILD DROPBOX ZIP</button>
+        </form>
+    </div>
+
     <div class="admin-card">
         <strong>Live Upload</strong>
         <p>{{ message }}</p>

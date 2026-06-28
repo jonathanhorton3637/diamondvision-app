@@ -379,6 +379,30 @@ def detect_team_from_color(img, team1_color="", team2_color=""):
     return "Team_1"
 
 
+
+def roster_match_number(ocr_number, roster):
+    if not ocr_number:
+        return ""
+
+    if ocr_number in roster:
+        return ocr_number
+
+    # Common OCR issue: reads 8 when jersey is 88, 1 when jersey is 11, etc.
+    doubled = ocr_number + ocr_number
+    if doubled in roster:
+        return doubled
+
+    # Common OCR issue: drops leading/trailing digit.
+    possible = []
+    for number in roster.keys():
+        if ocr_number in number or number in ocr_number:
+            possible.append(number)
+
+    if len(possible) == 1:
+        return possible[0]
+
+    return ""
+
 def process_mobile_job(input_dir, output_dir, roster_text="", progress_callback=None):
     """
     Supports both original single-team mode and new two-team mode.
@@ -556,8 +580,11 @@ def process_mobile_job(input_dir, output_dir, roster_text="", progress_callback=
         if category in ("Best", "Keep"):
             ocr_number, ocr_conf, ocr_raw = read_jersey_number(img)
 
-            if ocr_number and ocr_conf >= .25 and ocr_number in active_roster:
-                assigned = active_roster[ocr_number]
+            matched_number = roster_match_number(ocr_number, active_roster)
+
+            if matched_number and ocr_conf >= .25:
+                ocr_number = matched_number
+                assigned = active_roster[matched_number]
 
             if assigned == "Unknown":
                 player_folder = os.path.join(output_dir, "Players", "Unknown")

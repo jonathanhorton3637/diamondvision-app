@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>More</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="phone">
+
+    <a class="back" href="/">← Back</a>
+
+    <div class="brand">
+        <span>💎</span>
+        More
+    </div>
+
+    <a class="big-card" href="/admin">
+        <div class="thumb">⚙️</div>
+        <div>
+            <strong>Admin</strong>
+            <p>Health, backups, exports, controls</p>
+        </div>
+        <div class="chevron">›</div>
+    </a>
+
+    <a class="big-card" href="/new">
+        <div class="thumb">📸</div>
+        <div>
+            <strong>Import Photos</strong>
+            <p>Start a new upload job</p>
+        </div>
+        <div class="chevron">›</div>
+    </a>
+
+    {% for tournament in tournaments[:1] %}
+    <a class="big-card" href="/live/{{ tournament }}">
+        <div class="thumb">🔴</div>
+        <div>
+            <strong>Live Mode</strong>
+            <p>Add photos to latest tournament</p>
+        </div>
+        <div class="chevron">›</div>
+    </a>
+
+    <a class="big-card" href="/review/{{ tournament }}">
+        <div class="thumb">👥</div>
+        <div>
+            <strong>Review Queue</strong>
+            <p>Fix Unknown and low-confidence photos</p>
+        </div>
+        <div class="chevron">›</div>
+    </a>
+    {% endfor %}
+
+</div>
+
+<div class="bottom-nav">
+    <a href="/">
+        🏠
+        <span>Home</span>
+    </a>
+
+    <a href="/new">
+        ➕
+        <span>Import</span>
+    </a>
+
+    <span class="active">
+        ☰
+        <small>More</small>
+    </span>
+</div>
+
+</body>
+</html>

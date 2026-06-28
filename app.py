@@ -638,12 +638,20 @@ def review_move(tournament, folder, filename):
     if not os.path.exists(source):
         abort(404)
 
-    target_folder = os.path.join(
-        TOURNAMENT_DIR,
-        tournament,
-        "Players",
-        safe_name(target_player)
-    )
+    if "/Players/" in target_player:
+        target_folder = os.path.join(
+            TOURNAMENT_DIR,
+            tournament,
+            "Teams",
+            *target_player.split("/")
+        )
+    else:
+        target_folder = os.path.join(
+            TOURNAMENT_DIR,
+            tournament,
+            "Players",
+            safe_name(target_player)
+        )
 
     os.makedirs(target_folder, exist_ok=True)
 
