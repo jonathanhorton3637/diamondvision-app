@@ -7,6 +7,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from core import context as ctx
 from routes.api import register_api_routes
+from routes.static_files import register_static_routes
 
 try:
     from processor import process_mobile_job, safe_name
@@ -51,6 +52,7 @@ ctx.PROCESSOR_AVAILABLE = PROCESSOR_AVAILABLE
 ctx.PROCESSOR_ERROR = PROCESSOR_ERROR
 
 register_api_routes(app)
+register_static_routes(app)
 
 try:
     from config import DROPBOX_ACCESS_TOKEN, DROPBOX_PARENT_FOLDER
@@ -1010,16 +1012,6 @@ def admin():
         processor_available=PROCESSOR_AVAILABLE,
         processor_error=PROCESSOR_ERROR
     )
-
-
-@app.route("/manifest.json")
-def manifest():
-    return send_from_directory("static", "manifest.json")
-
-
-@app.route("/service-worker.js")
-def service_worker():
-    return send_from_directory("static", "service-worker.js")
 
 
 if __name__ == "__main__":
