@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DiamondVision Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="phone">
+    <div class="brand">
+        <span>💎</span>
+        Dashboard
+    </div>
+
+    {% if latest %}
+    <div class="admin-card">
+        <strong>Latest Tournament</strong>
+        <p>{{ latest }}</p>
+        <a class="download-button" href="/live/{{ latest }}">🔴 LIVE MODE</a>
+        <a class="download-button" href="/review/{{ latest }}">👥 REVIEW QUEUE</a>
+        <a class="download-button" href="/tournament/{{ latest }}">📁 OPEN TOURNAMENT</a>
+    </div>
+    {% endif %}
+
+    <a class="big-card" href="/new">
+        <div class="thumb">📸</div>
+        <div><strong>Import Photos</strong><p>Start a new upload</p></div>
+        <div class="chevron">›</div>
+    </a>
+
+    <a class="big-card" href="/admin">
+        <div class="thumb">⚙️</div>
+        <div><strong>Admin</strong><p>Dropbox, exports, health</p></div>
+        <div class="chevron">›</div>
+    </a>
+
+    <a class="big-card" href="/tournaments">
+        <div class="thumb">🏠</div>
+        <div><strong>Tournaments</strong><p>View all galleries</p></div>
+        <div class="chevron">›</div>
+    </a>
+</div>
+
+<div class="bottom-nav">
+    <a href="/">
+        🏠
+        <span>Home</span>
+    </a>
+
+    <a href="/new">
+        ➕
+        <span>Import</span>
+    </a>
+
+    <a href="/more">
+        ☰
+        <span>More</span>
+    </a>
+</div>
+
+</body>
+</html>

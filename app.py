@@ -246,6 +246,11 @@ def dropbox_zip_path(tournament):
 
 @app.route("/")
 def index():
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/tournaments")
+def tournaments_page():
     tournaments = []
 
     for d in sorted(os.listdir(TOURNAMENT_DIR), reverse=True):
@@ -932,6 +937,18 @@ def live_upload(tournament):
 
 
 
+
+
+
+@app.route("/dashboard")
+def dashboard():
+    tournaments=[]
+    if os.path.exists(TOURNAMENT_DIR):
+        for d in sorted(os.listdir(TOURNAMENT_DIR), reverse=True):
+            if os.path.isdir(os.path.join(TOURNAMENT_DIR,d)):
+                tournaments.append(d)
+    latest=tournaments[0] if tournaments else None
+    return render_template("dashboard.html", tournaments=tournaments, latest=latest)
 
 
 @app.route("/more")
