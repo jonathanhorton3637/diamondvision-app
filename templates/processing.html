@@ -62,7 +62,11 @@ function updateStatus(){
             }
 
             if(data.complete){
+                document.getElementById("message").innerText = "Complete — opening results...";
                 document.getElementById("results-button").classList.remove("hidden");
+                setTimeout(function(){
+                    window.location.href = document.getElementById("results-button").href;
+                }, 2000);
                 return;
             }
 
