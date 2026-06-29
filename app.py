@@ -271,6 +271,29 @@ def tournaments_page():
     )
 
 
+
+@app.route("/admin/backup", methods=["POST"])
+def admin_backup():
+    backup_dir=os.path.join(BASE_DIR,"Backups")
+    os.makedirs(backup_dir,exist_ok=True)
+
+    stamp=datetime.now().strftime("%Y-%m-%d-%H%M%S")
+    zip_name=f"DiamondVision_Backup_{stamp}.zip"
+    zip_path=os.path.join(backup_dir,zip_name)
+
+    with zipfile.ZipFile(zip_path,"w",zipfile.ZIP_DEFLATED) as z:
+        for root, dirs, files in os.walk(BASE_DIR):
+            dirs[:] = [d for d in dirs if d not in ("venv",".git","Backups","__pycache__")]
+            for file in files:
+                if file.endswith(".zip") or file=="diamondvision.log":
+                    continue
+                full=os.path.join(root,file)
+                rel=os.path.relpath(full,BASE_DIR)
+                z.write(full,rel)
+
+    return redirect(url_for("admin"))
+
+
 @app.route("/health")
 def health():
     return jsonify({

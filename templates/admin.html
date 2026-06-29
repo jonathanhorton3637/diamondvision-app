@@ -25,6 +25,14 @@
         <a class="download-button" href="/health">HEALTH CHECK</a>
     </div>
 
+    <div class="admin-card">
+        <strong>Backup Center</strong>
+        <p>Create a safe ZIP backup before updates.</p>
+        <form method="POST" action="/admin/backup">
+            <button type="submit">💾 CREATE BACKUP</button>
+        </form>
+    </div>
+
     <div class="section-row">
         <h2>Tournaments</h2>
         <span>{{ tournaments|length }}</span>
