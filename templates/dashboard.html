@@ -27,8 +27,17 @@
     <div class="admin-card">
         <strong>Latest Tournament</strong>
         <p>{{ latest }}</p>
-        <a class="download-button" href="/live/{{ latest }}">🔴 LIVE MODE</a>
-        <a class="download-button" href="/review/{{ latest }}">👥 REVIEW QUEUE</a>
+        <a class="download-button" href="/live/{{ latest }}">🔴 LIVE UPLOAD</a>
+        <a class="download-button" href="/review/{{ latest }}">👥 REVIEW NOW</a>
+
+        <form method="POST" action="/export-dropbox/{{ latest }}">
+            <button type="submit">📦 BUILD DROPBOX ZIP</button>
+        </form>
+
+        <form method="POST" action="/sync-dropbox/{{ latest }}">
+            <button type="submit">☁️ SYNC DROPBOX</button>
+        </form>
+
         <a class="download-button" href="/tournament/{{ latest }}">📁 OPEN TOURNAMENT</a>
     </div>
     {% endif %}
