@@ -9,3 +9,5 @@ DropboxExports/
 Backups/
 *.zip
 config.py
+Exports/
+diamondvision.log
