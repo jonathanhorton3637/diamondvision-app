@@ -5,6 +5,8 @@ import threading
 import zipfile
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from core import context as ctx
+from routes.api import register_api_routes
 
 try:
     from processor import process_mobile_job, safe_name
@@ -36,6 +38,19 @@ IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png")
 UPLOAD_EXTENSIONS = (".jpg", ".jpeg", ".png", ".nef")
 
 JOB_STATUS = {}
+
+ctx.app = app
+ctx.BASE_DIR = BASE_DIR
+ctx.TOURNAMENT_DIR = TOURNAMENT_DIR
+ctx.UPLOAD_DIR = UPLOAD_DIR
+ctx.DROPBOX_EXPORT_DIR = DROPBOX_EXPORT_DIR
+ctx.IMAGE_EXTENSIONS = IMAGE_EXTENSIONS
+ctx.UPLOAD_EXTENSIONS = UPLOAD_EXTENSIONS
+ctx.JOB_STATUS = JOB_STATUS
+ctx.PROCESSOR_AVAILABLE = PROCESSOR_AVAILABLE
+ctx.PROCESSOR_ERROR = PROCESSOR_ERROR
+
+register_api_routes(app)
 
 try:
     from config import DROPBOX_ACCESS_TOKEN, DROPBOX_PARENT_FOLDER
@@ -294,15 +309,6 @@ def admin_backup():
     return redirect(url_for("admin"))
 
 
-@app.route("/health")
-def health():
-    return jsonify({
-        "status": "ok",
-        "processor_available": PROCESSOR_AVAILABLE,
-        "processor_error": PROCESSOR_ERROR
-    })
-
-
 @app.route("/new", methods=["GET", "POST"])
 def new_job():
     if request.method == "POST":
@@ -413,20 +419,6 @@ def processing(job_name):
         "processing.html",
         job_name=job_name
     )
-
-
-@app.route("/api/status/<job_name>")
-def api_status(job_name):
-    status = JOB_STATUS.get(job_name, {
-        "done": 0,
-        "total": 0,
-        "percent": 0,
-        "message": "Waiting...",
-        "complete": False,
-        "error": ""
-    })
-
-    return jsonify(status)
 
 
 @app.route("/tournament/<name>")
