@@ -9,6 +9,9 @@ from core import context as ctx
 from routes.api import register_api_routes
 from routes.static_files import register_static_routes
 from routes.dashboard import register_dashboard_routes
+from routes.admin import register_admin_routes
+from routes.upload import register_upload_routes
+from routes.dropbox_routes import register_dropbox_routes
 
 try:
     from processor import process_mobile_job, safe_name
@@ -213,56 +216,15 @@ def build_cards(name):
     return cards
 
 
-def update_job_status(job_name, done, total, message):
-    percent = 0
-
-    if total > 0:
-        percent = int((done / total) * 100)
-
-    JOB_STATUS[job_name] = {
-        "done": done,
-        "total": total,
-        "percent": percent,
-        "message": message,
-        "complete": done >= total and total > 0,
-        "error": ""
-    }
-
-
-def run_processing_job(job_name, upload_path, output_path, job_config):
-    try:
-        def progress(done, total, message):
-            update_job_status(job_name, done, total, message)
-
-        summary = process_mobile_job(
-            upload_path,
-            output_path,
-            job_config,
-            progress_callback=progress
-        )
-
-        JOB_STATUS[job_name]["summary"] = summary
-        JOB_STATUS[job_name]["complete"] = True
-        JOB_STATUS[job_name]["percent"] = 100
-        JOB_STATUS[job_name]["message"] = "Processing complete"
-
-    except Exception as e:
-        JOB_STATUS[job_name] = {
-            "done": 0,
-            "total": 0,
-            "percent": 0,
-            "message": "Error",
-            "complete": True,
-            "error": str(e)
-        }
-
-
 def dropbox_zip_path(tournament):
     zip_name = f"{safe_name(tournament)}_Dropbox_Player_Gallery.zip"
     return os.path.join(DROPBOX_EXPORT_DIR, zip_name)
 
 
 register_dashboard_routes(app, count_images, dropbox_zip_path)
+register_admin_routes(app)
+register_upload_routes(app, safe_name, process_mobile_job)
+register_dropbox_routes(app, safe_name, dropbox_zip_path, DROPBOX_ACCESS_TOKEN, DROPBOX_PARENT_FOLDER)
 
 
 @app.route("/")
@@ -293,140 +255,6 @@ def tournaments_page():
 
 
 
-@app.route("/admin/backup", methods=["POST"])
-def admin_backup():
-    backup_dir=os.path.join(BASE_DIR,"Backups")
-    os.makedirs(backup_dir,exist_ok=True)
-
-    stamp=datetime.now().strftime("%Y-%m-%d-%H%M%S")
-    zip_name=f"DiamondVision_Backup_{stamp}.zip"
-    zip_path=os.path.join(backup_dir,zip_name)
-
-    with zipfile.ZipFile(zip_path,"w",zipfile.ZIP_DEFLATED) as z:
-        for root, dirs, files in os.walk(BASE_DIR):
-            dirs[:] = [d for d in dirs if d not in ("venv",".git","Backups","__pycache__")]
-            for file in files:
-                if file.endswith(".zip") or file=="diamondvision.log":
-                    continue
-                full=os.path.join(root,file)
-                rel=os.path.relpath(full,BASE_DIR)
-                z.write(full,rel)
-
-    return redirect(url_for("admin"))
-
-
-@app.route("/new", methods=["GET", "POST"])
-def new_job():
-    if request.method == "POST":
-        tournament = safe_name(request.form.get("tournament", "Tournament"))
-
-        job_mode = request.form.get("job_mode", "single")
-
-        team1 = safe_name(request.form.get("team", "Team"))
-        team1_color = request.form.get("team1_color", "")
-        roster1 = request.form.get("roster", "")
-
-        team2 = safe_name(request.form.get("team2", "Opponent"))
-        team2_color = request.form.get("team2_color", "")
-        roster2 = request.form.get("roster2", "")
-
-        date = datetime.now().strftime("%Y-%m-%d-%H%M%S")
-
-        if job_mode == "two_team":
-            job_name = f"{date}_{tournament}_TwoTeam"
-        else:
-            job_name = f"{date}_{tournament}_{team1}"
-
-        upload_path = os.path.join(UPLOAD_DIR, job_name)
-        output_path = os.path.join(TOURNAMENT_DIR, job_name)
-
-        os.makedirs(upload_path, exist_ok=True)
-        os.makedirs(output_path, exist_ok=True)
-        os.makedirs(os.path.join(output_path, "Favorites"), exist_ok=True)
-
-        job_config = {
-            "mode": job_mode,
-            "team1": team1,
-            "team1_color": team1_color,
-            "roster1": roster1,
-            "team2": team2,
-            "team2_color": team2_color,
-            "roster2": roster2
-        }
-
-        with open(os.path.join(output_path, "job_config.txt"), "w", encoding="utf-8") as f:
-            f.write(str(job_config))
-
-        with open(os.path.join(output_path, "mobile_roster.txt"), "w", encoding="utf-8") as f:
-            f.write(roster1)
-
-        if job_mode == "two_team":
-            with open(os.path.join(output_path, "mobile_roster_team2.txt"), "w", encoding="utf-8") as f:
-                f.write(roster2)
-
-        files = request.files.getlist("photos")
-        saved_count = 0
-
-        for file in files:
-            if not file or not file.filename:
-                continue
-
-            filename = secure_filename(file.filename)
-            ext = os.path.splitext(filename)[1].lower()
-
-            if ext not in UPLOAD_EXTENSIONS:
-                continue
-
-            destination = os.path.join(upload_path, filename)
-
-            if os.path.exists(destination):
-                name, extension = os.path.splitext(filename)
-                stamp = datetime.now().strftime("%H%M%S%f")
-                filename = f"{name}_{stamp}{extension}"
-                destination = os.path.join(upload_path, filename)
-
-            file.save(destination)
-            saved_count += 1
-
-        if saved_count == 0:
-            return "No supported photos uploaded. Use JPG, JPEG, PNG, or NEF.", 400
-
-        if PROCESSOR_AVAILABLE:
-            JOB_STATUS[job_name] = {
-                "done": 0,
-                "total": saved_count,
-                "percent": 0,
-                "message": "Queued",
-                "complete": False,
-                "error": ""
-            }
-
-            thread = threading.Thread(
-                target=run_processing_job,
-                args=(job_name, upload_path, output_path, job_config),
-                daemon=True
-            )
-
-            thread.start()
-
-            return redirect(url_for("processing", job_name=job_name))
-
-        return redirect(url_for("tournament", name=job_name))
-
-    return render_template(
-        "job.html",
-        processor_available=PROCESSOR_AVAILABLE
-    )
-
-
-@app.route("/processing/<job_name>")
-def processing(job_name):
-    return render_template(
-        "processing.html",
-        job_name=job_name
-    )
-
-
 @app.route("/tournament/<name>")
 def tournament(name):
     path = os.path.join(TOURNAMENT_DIR, name)
@@ -444,151 +272,6 @@ def tournament(name):
         cards=build_cards(name),
         summary=None,
         export_ready=export_ready
-    )
-
-
-@app.route("/export-dropbox/<tournament>", methods=["POST"])
-def export_dropbox(tournament):
-    tournament_path = os.path.join(TOURNAMENT_DIR, tournament)
-
-    if not os.path.exists(tournament_path):
-        abort(404)
-
-    zip_path = dropbox_zip_path(tournament)
-
-    if os.path.exists(zip_path):
-        os.remove(zip_path)
-
-    export_name = safe_name(tournament) + "_ParentGallery"
-
-    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
-        index_rows = []
-
-        teams_path = os.path.join(tournament_path, "Teams")
-        players_path = os.path.join(tournament_path, "Players")
-
-        if os.path.exists(teams_path):
-            for team in sorted(os.listdir(teams_path)):
-                team_players = os.path.join(teams_path, team, "Players")
-
-                if not os.path.exists(team_players):
-                    continue
-
-                for player in sorted(os.listdir(team_players)):
-                    player_path = os.path.join(team_players, player)
-
-                    if not os.path.isdir(player_path):
-                        continue
-
-                    photo_count = 0
-
-                    for file in sorted(os.listdir(player_path)):
-                        if file.lower().endswith(IMAGE_EXTENSIONS):
-                            full = os.path.join(player_path, file)
-                            rel = os.path.join(export_name, team, player, file)
-                            z.write(full, rel)
-                            photo_count += 1
-
-                    if photo_count > 0:
-                        index_rows.append((team, player, photo_count, f"{team}/{player}/"))
-
-        elif os.path.exists(players_path):
-            for player in sorted(os.listdir(players_path)):
-                player_path = os.path.join(players_path, player)
-
-                if not os.path.isdir(player_path):
-                    continue
-
-                photo_count = 0
-
-                for file in sorted(os.listdir(player_path)):
-                    if file.lower().endswith(IMAGE_EXTENSIONS):
-                        full = os.path.join(player_path, file)
-                        rel = os.path.join(export_name, "Players", player, file)
-                        z.write(full, rel)
-                        photo_count += 1
-
-                if photo_count > 0:
-                    index_rows.append(("Players", player, photo_count, f"Players/{player}/"))
-
-        index_html = """<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DiamondVision Parent Gallery</title>
-<style>
-body{font-family:Arial,sans-serif;background:#f7f7fb;margin:0;padding:20px;color:#111}
-h1{margin-bottom:6px}
-.card{display:block;background:white;margin:12px 0;padding:16px;border-radius:18px;text-decoration:none;color:#111;box-shadow:0 6px 18px rgba(0,0,0,.08)}
-.small{color:#666}
-</style>
-</head>
-<body>
-<h1>DiamondVision Parent Gallery</h1>
-<p class="small">Tap a player folder to view photos.</p>
-"""
-
-        for team, player, count, link in index_rows:
-            index_html += f'<a class="card" href="{link}"><strong>{player.replace("_"," ")}</strong><br><span class="small">{team.replace("_"," ")} · {count} photos</span></a>\n'
-
-        index_html += "</body></html>"
-
-        z.writestr(os.path.join(export_name, "index.html"), index_html)
-
-    return redirect(url_for("tournament", name=tournament))
-
-
-
-@app.route("/sync-dropbox/<tournament>", methods=["POST"])
-def sync_dropbox(tournament):
-    if not DROPBOX_ACCESS_TOKEN:
-        return "Dropbox token missing. Add it to config.py.", 400
-
-    zip_path = dropbox_zip_path(tournament)
-
-    if not os.path.exists(zip_path):
-        return redirect(url_for("export_dropbox", tournament=tournament))
-
-    try:
-        import dropbox
-
-        dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
-
-        dropbox_path = (
-            DROPBOX_PARENT_FOLDER.rstrip("/")
-            + "/"
-            + safe_name(tournament)
-            + "/"
-            + os.path.basename(zip_path)
-        )
-
-        with open(zip_path, "rb") as f:
-            dbx.files_upload(
-                f.read(),
-                dropbox_path,
-                mode=dropbox.files.WriteMode.overwrite
-            )
-
-        return redirect(url_for("admin"))
-
-    except Exception as e:
-        return f"Dropbox sync failed: {e}", 500
-
-
-
-@app.route("/download-dropbox/<tournament>")
-def download_dropbox(tournament):
-    zip_path = dropbox_zip_path(tournament)
-
-    if not os.path.exists(zip_path):
-        abort(404)
-
-    filename = os.path.basename(zip_path)
-
-    return send_from_directory(
-        DROPBOX_EXPORT_DIR,
-        filename,
-        as_attachment=True
     )
 
 
@@ -969,21 +652,6 @@ def more_menu():
             if os.path.isdir(os.path.join(TOURNAMENT_DIR,d)):
                 tournaments.append(d)
     return render_template("more.html", tournaments=tournaments)
-
-
-@app.route("/admin")
-def admin():
-    tournaments=[]
-    if os.path.exists(TOURNAMENT_DIR):
-        for d in sorted(os.listdir(TOURNAMENT_DIR), reverse=True):
-            if os.path.isdir(os.path.join(TOURNAMENT_DIR,d)):
-                tournaments.append(d)
-    return render_template(
-        "admin.html",
-        tournaments=tournaments,
-        processor_available=PROCESSOR_AVAILABLE,
-        processor_error=PROCESSOR_ERROR
-    )
 
 
 if __name__ == "__main__":
