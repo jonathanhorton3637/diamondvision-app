@@ -14,6 +14,16 @@
     </div>
 
     {% if latest %}
+    <div class="summary-card">
+        <strong>Today Status</strong>
+        <div class="summary-grid">
+            <span>Review<br><b>{{ stats.review }}</b></span>
+            <span>Best<br><b>{{ stats.best }}</b></span>
+            <span>Keep<br><b>{{ stats.keep }}</b></span>
+            <span>Dropbox<br><b>{{ "Ready" if stats.dropbox_ready else "Build" }}</b></span>
+        </div>
+    </div>
+
     <div class="admin-card">
         <strong>Latest Tournament</strong>
         <p>{{ latest }}</p>
