@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from core import context as ctx
 from routes.api import register_api_routes
 from routes.static_files import register_static_routes
+from routes.dashboard import register_dashboard_routes
 
 try:
     from processor import process_mobile_job, safe_name
@@ -259,6 +260,9 @@ def run_processing_job(job_name, upload_path, output_path, job_config):
 def dropbox_zip_path(tournament):
     zip_name = f"{safe_name(tournament)}_Dropbox_Player_Gallery.zip"
     return os.path.join(DROPBOX_EXPORT_DIR, zip_name)
+
+
+register_dashboard_routes(app, count_images, dropbox_zip_path)
 
 
 @app.route("/")
@@ -955,38 +959,6 @@ def live_upload(tournament):
 
 
 
-
-
-@app.route("/dashboard")
-def dashboard():
-    tournaments=[]
-    if os.path.exists(TOURNAMENT_DIR):
-        for d in sorted(os.listdir(TOURNAMENT_DIR), reverse=True):
-            if os.path.isdir(os.path.join(TOURNAMENT_DIR,d)):
-                tournaments.append(d)
-
-    latest=tournaments[0] if tournaments else None
-
-    stats={
-        "review":0,
-        "best":0,
-        "keep":0,
-        "dropbox_ready":False
-    }
-
-    if latest:
-        tpath=os.path.join(TOURNAMENT_DIR,latest)
-        stats["review"]=count_images(os.path.join(tpath,"Players","Unknown"))
-        stats["best"]=count_images(os.path.join(tpath,"Best"))
-        stats["keep"]=count_images(os.path.join(tpath,"Keep"))
-        stats["dropbox_ready"]=os.path.exists(dropbox_zip_path(latest))
-
-    return render_template(
-        "dashboard.html",
-        tournaments=tournaments,
-        latest=latest,
-        stats=stats
-    )
 
 
 @app.route("/more")
