@@ -15,18 +15,38 @@ from routes.dropbox_routes import register_dropbox_routes
 from routes.main_routes import register_main_routes
 
 try:
-    from processor import process_mobile_job, safe_name
+    from config import USE_SERVERLESS
+except Exception:
+    USE_SERVERLESS = False
+
+
+if USE_SERVERLESS:
     PROCESSOR_AVAILABLE = True
     PROCESSOR_ERROR = ""
-except Exception as e:
-    PROCESSOR_AVAILABLE = False
-    PROCESSOR_ERROR = str(e)
+
+    def process_mobile_job(*args, **kwargs):
+        raise RuntimeError("Local processor disabled because USE_SERVERLESS=True")
 
     def safe_name(text):
         text = str(text).strip() or "Unknown"
         for ch in '<>:"/\\|?*#':
             text = text.replace(ch, "_")
         return text.replace(" ", "_")
+
+else:
+    try:
+        from processor import process_mobile_job, safe_name
+        PROCESSOR_AVAILABLE = True
+        PROCESSOR_ERROR = ""
+    except Exception as e:
+        PROCESSOR_AVAILABLE = False
+        PROCESSOR_ERROR = str(e)
+
+        def safe_name(text):
+            text = str(text).strip() or "Unknown"
+            for ch in '<>:"/\\|?*#':
+                text = text.replace(ch, "_")
+            return text.replace(" ", "_")
 
 
 app = Flask(__name__)

@@ -24,7 +24,7 @@ def unzip_file(zip_path, output_folder):
 
 
 def upload_file(local_path, dropbox_path, access_token):
-    dbx = dropbox.Dropbox(access_token)
+    dbx = dropbox.Dropbox(access_token.strip())
 
     with open(local_path, "rb") as f:
         dbx.files_upload(
@@ -39,7 +39,7 @@ def upload_file(local_path, dropbox_path, access_token):
 def download_file(dropbox_path, local_path, access_token):
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
-    dbx = dropbox.Dropbox(access_token)
+    dbx = dropbox.Dropbox(access_token.strip())
     _, res = dbx.files_download(dropbox_path)
 
     with open(local_path, "wb") as f:
