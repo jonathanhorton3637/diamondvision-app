@@ -5,14 +5,21 @@ from flask import render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
 from core import context as ctx
+from core.runpod_client import submit_job, enabled as runpod_enabled
+from core.dropbox_transport import zip_folder, upload_file
+
+try:
+    from config import DROPBOX_ACCESS_TOKEN, DROPBOX_PARENT_FOLDER
+except Exception:
+    DROPBOX_ACCESS_TOKEN = ""
+    DROPBOX_PARENT_FOLDER = "/DiamondVision"
+
 
 
 def register_upload_routes(app, safe_name, process_mobile_job):
 
     def update_job_status(job_name, done, total, message):
-        percent = 0
-        if total > 0:
-            percent = int((done / total) * 100)
+        percent = int((done / total) * 100) if total > 0 else 0
 
         ctx.JOB_STATUS[job_name] = {
             "done": done,
@@ -135,12 +142,65 @@ def register_upload_routes(app, safe_name, process_mobile_job):
                     "error": ""
                 }
 
-                thread = threading.Thread(
-                    target=run_processing_job,
-                    args=(job_name, upload_path, output_path, job_config),
-                    daemon=True
-                )
-                thread.start()
+                if runpod_enabled():
+                    try:
+                        transport_dir = os.path.join(ctx.BASE_DIR, "DropboxTransport")
+                        os.makedirs(transport_dir, exist_ok=True)
+
+                        input_zip_local = os.path.join(
+                            transport_dir,
+                            f"{job_name}_input.zip"
+                        )
+
+                        zip_folder(upload_path, input_zip_local)
+
+                        input_zip_dropbox_path = (
+                            DROPBOX_PARENT_FOLDER.rstrip("/")
+                            + "/ServerlessJobs/"
+                            + job_name
+                            + "/input.zip"
+                        )
+
+                        output_zip_dropbox_path = (
+                            DROPBOX_PARENT_FOLDER.rstrip("/")
+                            + "/ServerlessJobs/"
+                            + job_name
+                            + "/results.zip"
+                        )
+
+                        upload_file(
+                            input_zip_local,
+                            input_zip_dropbox_path,
+                            DROPBOX_ACCESS_TOKEN
+                        )
+
+                        payload = {
+                            "job_name": job_name,
+                            "job_config": job_config,
+                            "saved_count": saved_count,
+                            "dropbox_access_token": DROPBOX_ACCESS_TOKEN,
+                            "input_zip_dropbox_path": input_zip_dropbox_path,
+                            "output_zip_dropbox_path": output_zip_dropbox_path
+                        }
+
+                        response = submit_job(payload)
+                        runpod_job_id = response.get("id")
+
+                        ctx.JOB_STATUS[job_name]["runpod_job_id"] = runpod_job_id
+                        ctx.JOB_STATUS[job_name]["message"] = "Submitted to RunPod"
+
+                    except Exception as e:
+                        ctx.JOB_STATUS[job_name]["complete"] = True
+                        ctx.JOB_STATUS[job_name]["error"] = str(e)
+                        ctx.JOB_STATUS[job_name]["message"] = "RunPod submit failed"
+
+                else:
+                    thread = threading.Thread(
+                        target=run_processing_job,
+                        args=(job_name, upload_path, output_path, job_config),
+                        daemon=True
+                    )
+                    thread.start()
 
                 return redirect(url_for("processing", job_name=job_name))
 
