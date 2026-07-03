@@ -10,3 +10,4 @@ pyclipper
 shapely
 numpy
 pillow
+dropbox
