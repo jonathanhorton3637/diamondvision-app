@@ -29,7 +29,7 @@ def register_upload_routes(app, safe_name, process_mobile_job):
             "message": message,
             "complete": done >= total and total > 0,
             "error": ""
-        }
+        })
 
     def run_processing_job(job_name, upload_path, output_path, job_config):
         try:
@@ -56,7 +56,7 @@ def register_upload_routes(app, safe_name, process_mobile_job):
                 "message": "Error",
                 "complete": True,
                 "error": str(e)
-            }
+            })
 
     @app.route("/new", methods=["GET", "POST"])
     def new_job():
