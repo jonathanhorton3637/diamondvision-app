@@ -76,6 +76,11 @@ ctx.JOB_STATUS = JOB_STATUS
 ctx.PROCESSOR_AVAILABLE = PROCESSOR_AVAILABLE
 ctx.PROCESSOR_ERROR = PROCESSOR_ERROR
 
+if "process_mobile_job" not in globals():
+    def process_mobile_job(*args, **kwargs):
+        raise RuntimeError("Local processor disabled because USE_SERVERLESS=True")
+
+
 register_api_routes(app)
 register_static_routes(app)
 
