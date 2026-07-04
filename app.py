@@ -51,6 +51,12 @@ else:
 
 app = Flask(__name__)
 
+@app.route("/debug/jobs")
+def debug_jobs():
+    from core.job_store import _read_all
+    return _read_all()
+
+
 @app.route("/envcheck")
 def envcheck():
     import os
