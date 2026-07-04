@@ -141,7 +141,7 @@ def register_upload_routes(app, safe_name, process_mobile_job):
                     "message": "Queued",
                     "complete": False,
                     "error": ""
-                }
+                })
 
                 if runpod_enabled():
                     try:
