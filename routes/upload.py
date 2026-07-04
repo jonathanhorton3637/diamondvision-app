@@ -133,7 +133,7 @@ def register_upload_routes(app, safe_name, process_mobile_job):
             if saved_count == 0:
                 return "No supported photos uploaded. Use JPG, JPEG, PNG, or NEF.", 400
 
-            if ctx.PROCESSOR_AVAILABLE:
+            if runpod_enabled() or ctx.PROCESSOR_AVAILABLE:
                 set_job(job_name, {
                     "done": 0,
                     "total": saved_count,
