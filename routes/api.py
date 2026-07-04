@@ -1,5 +1,6 @@
 from flask import jsonify
 from core import context as ctx
+from core.job_store import get_job, set_job
 from core.runpod_client import get_status, enabled as runpod_enabled
 from core.dropbox_transport import download_file, unzip_file
 import os
@@ -23,7 +24,7 @@ def register_api_routes(app):
 
     @app.route("/api/status/<job_name>")
     def api_status(job_name):
-        status = ctx.JOB_STATUS.get(job_name, {
+        status = get_job(job_name, {
             "done": 0,
             "total": 0,
             "percent": 0,
@@ -89,11 +90,11 @@ def register_api_routes(app):
                 else:
                     status["message"] = f"RunPod status: {state or 'unknown'}"
 
-                ctx.JOB_STATUS[job_name] = status
+                set_job(job_name, status)
 
             except Exception as e:
                 status["message"] = "Could not check RunPod status"
                 status["error"] = str(e)
-                ctx.JOB_STATUS[job_name] = status
+                set_job(job_name, status)
 
         return jsonify(status)

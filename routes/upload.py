@@ -5,6 +5,7 @@ from flask import render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
 from core import context as ctx
+from core.job_store import set_job, update_job
 from core.runpod_client import submit_job, enabled as runpod_enabled
 from core.dropbox_transport import zip_folder, upload_file
 
@@ -21,7 +22,7 @@ def register_upload_routes(app, safe_name, process_mobile_job):
     def update_job_status(job_name, done, total, message):
         percent = int((done / total) * 100) if total > 0 else 0
 
-        ctx.JOB_STATUS[job_name] = {
+        set_job(job_name, {
             "done": done,
             "total": total,
             "percent": percent,
@@ -43,12 +44,12 @@ def register_upload_routes(app, safe_name, process_mobile_job):
             )
 
             ctx.JOB_STATUS[job_name]["summary"] = summary
-            ctx.JOB_STATUS[job_name]["complete"] = True
+            update_job(job_name, {"complete": True})
             ctx.JOB_STATUS[job_name]["percent"] = 100
             ctx.JOB_STATUS[job_name]["message"] = "Processing complete"
 
         except Exception as e:
-            ctx.JOB_STATUS[job_name] = {
+            set_job(job_name, {
                 "done": 0,
                 "total": 0,
                 "percent": 0,
@@ -133,7 +134,7 @@ def register_upload_routes(app, safe_name, process_mobile_job):
                 return "No supported photos uploaded. Use JPG, JPEG, PNG, or NEF.", 400
 
             if ctx.PROCESSOR_AVAILABLE:
-                ctx.JOB_STATUS[job_name] = {
+                set_job(job_name, {
                     "done": 0,
                     "total": saved_count,
                     "percent": 0,
@@ -187,13 +188,13 @@ def register_upload_routes(app, safe_name, process_mobile_job):
                         response = submit_job(payload)
                         runpod_job_id = response.get("id")
 
-                        ctx.JOB_STATUS[job_name]["runpod_job_id"] = runpod_job_id
-                        ctx.JOB_STATUS[job_name]["message"] = "Submitted to RunPod"
+                        update_job(job_name, {"runpod_job_id": runpod_job_id})
+                        update_job(job_name, {"message": "Submitted to RunPod"})
 
                     except Exception as e:
-                        ctx.JOB_STATUS[job_name]["complete"] = True
-                        ctx.JOB_STATUS[job_name]["error"] = str(e)
-                        ctx.JOB_STATUS[job_name]["message"] = "RunPod submit failed"
+                        update_job(job_name, {"complete": True})
+                        update_job(job_name, {"error": str(e)})
+                        update_job(job_name, {"message": "RunPod submit failed"})
 
                 else:
                     thread = threading.Thread(
