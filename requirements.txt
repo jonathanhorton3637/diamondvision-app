@@ -12,4 +12,5 @@ pyclipper
 shapely
 ninja
 rawpy
-imageiogunicorn
+imageio
+gunicorn
