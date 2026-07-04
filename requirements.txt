@@ -14,3 +14,4 @@ ninja
 rawpy
 imageio
 gunicorn
+requests
