@@ -15,6 +15,11 @@ except Exception:
     DROPBOX_ACCESS_TOKEN = ""
     DROPBOX_PARENT_FOLDER = "/DiamondVision"
 
+DROPBOX_PARENT_FOLDER = os.environ.get("DROPBOX_PARENT_FOLDER", DROPBOX_PARENT_FOLDER)
+DROPBOX_APP_KEY = os.environ.get("DROPBOX_APP_KEY", "")
+DROPBOX_APP_SECRET = os.environ.get("DROPBOX_APP_SECRET", "")
+DROPBOX_REFRESH_TOKEN = os.environ.get("DROPBOX_REFRESH_TOKEN", "")
+
 
 
 def register_upload_routes(app, safe_name, process_mobile_job):
