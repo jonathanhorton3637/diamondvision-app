@@ -51,6 +51,18 @@ else:
 
 app = Flask(__name__)
 
+@app.route("/envcheck")
+def envcheck():
+    import os
+    return {
+        "USE_SERVERLESS": os.environ.get("USE_SERVERLESS"),
+        "RUNPOD_API_KEY": bool(os.environ.get("RUNPOD_API_KEY")),
+        "RUNPOD_ENDPOINT_ID": os.environ.get("RUNPOD_ENDPOINT_ID"),
+        "DROPBOX_APP_KEY": bool(os.environ.get("DROPBOX_APP_KEY")),
+        "DROPBOX_REFRESH_TOKEN": bool(os.environ.get("DROPBOX_REFRESH_TOKEN")),
+    }
+
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TOURNAMENT_DIR = os.path.join(BASE_DIR, "Tournament")
 UPLOAD_DIR = os.path.join(BASE_DIR, "MobileUploads")
