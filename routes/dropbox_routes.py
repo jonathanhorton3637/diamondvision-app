@@ -109,7 +109,7 @@ h1{margin-bottom:6px}
         try:
             import dropbox
 
-            dbx = dropbox.Dropbox(dropbox_token)
+            dbx = dropbox.Dropbox(dropbox_token.strip())
 
             dropbox_path = (
                 dropbox_parent_folder.rstrip("/")

@@ -3,6 +3,27 @@ import zipfile
 import dropbox
 
 
+def get_client():
+    from config import (
+        DROPBOX_APP_KEY,
+        DROPBOX_APP_SECRET,
+        DROPBOX_REFRESH_TOKEN,
+        DROPBOX_ACCESS_TOKEN,
+    )
+
+    if DROPBOX_REFRESH_TOKEN and DROPBOX_APP_KEY and DROPBOX_APP_SECRET:
+        return dropbox.Dropbox(
+            oauth2_refresh_token=DROPBOX_REFRESH_TOKEN.strip(),
+            app_key=DROPBOX_APP_KEY.strip(),
+            app_secret=DROPBOX_APP_SECRET.strip(),
+        )
+
+    if DROPBOX_ACCESS_TOKEN:
+        return dropbox.Dropbox(DROPBOX_ACCESS_TOKEN.strip())
+
+    raise RuntimeError("Dropbox credentials are missing")
+
+
 def zip_folder(source_folder, zip_path):
     os.makedirs(os.path.dirname(zip_path), exist_ok=True)
 
@@ -23,8 +44,8 @@ def unzip_file(zip_path, output_folder):
         z.extractall(output_folder)
 
 
-def upload_file(local_path, dropbox_path, access_token):
-    dbx = dropbox.Dropbox(access_token.strip())
+def upload_file(local_path, dropbox_path, access_token=None):
+    dbx = get_client()
 
     with open(local_path, "rb") as f:
         dbx.files_upload(
@@ -36,10 +57,10 @@ def upload_file(local_path, dropbox_path, access_token):
     return dropbox_path
 
 
-def download_file(dropbox_path, local_path, access_token):
+def download_file(dropbox_path, local_path, access_token=None):
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
-    dbx = dropbox.Dropbox(access_token.strip())
+    dbx = get_client()
     _, res = dbx.files_download(dropbox_path)
 
     with open(local_path, "wb") as f:

@@ -9,7 +9,7 @@ from core.runpod_client import submit_job, enabled as runpod_enabled
 from core.dropbox_transport import zip_folder, upload_file
 
 try:
-    from config import DROPBOX_ACCESS_TOKEN, DROPBOX_PARENT_FOLDER
+    from config import DROPBOX_ACCESS_TOKEN, DROPBOX_PARENT_FOLDER, DROPBOX_APP_KEY, DROPBOX_APP_SECRET, DROPBOX_REFRESH_TOKEN
 except Exception:
     DROPBOX_ACCESS_TOKEN = ""
     DROPBOX_PARENT_FOLDER = "/DiamondVision"
@@ -170,15 +170,16 @@ def register_upload_routes(app, safe_name, process_mobile_job):
 
                         upload_file(
                             input_zip_local,
-                            input_zip_dropbox_path,
-                            DROPBOX_ACCESS_TOKEN
+                            input_zip_dropbox_path
                         )
 
                         payload = {
                             "job_name": job_name,
                             "job_config": job_config,
                             "saved_count": saved_count,
-                            "dropbox_access_token": DROPBOX_ACCESS_TOKEN,
+                            "dropbox_app_key": DROPBOX_APP_KEY,
+                            "dropbox_app_secret": DROPBOX_APP_SECRET,
+                            "dropbox_refresh_token": DROPBOX_REFRESH_TOKEN,
                             "input_zip_dropbox_path": input_zip_dropbox_path,
                             "output_zip_dropbox_path": output_zip_dropbox_path
                         }

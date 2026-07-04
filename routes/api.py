@@ -5,7 +5,7 @@ from core.dropbox_transport import download_file, unzip_file
 import os
 
 try:
-    from config import DROPBOX_ACCESS_TOKEN
+    from config import DROPBOX_ACCESS_TOKEN, DROPBOX_APP_KEY, DROPBOX_APP_SECRET, DROPBOX_REFRESH_TOKEN
 except Exception:
     DROPBOX_ACCESS_TOKEN = ""
 
@@ -60,7 +60,7 @@ def register_api_routes(app):
                     output = rp.get("output", {}) or {}
                     result_zip_dropbox_path = output.get("output_zip_dropbox_path")
 
-                    if result_zip_dropbox_path and DROPBOX_ACCESS_TOKEN:
+                    if result_zip_dropbox_path:
                         transport_dir = os.path.join(ctx.BASE_DIR, "DropboxTransport")
                         os.makedirs(transport_dir, exist_ok=True)
 
@@ -71,8 +71,7 @@ def register_api_routes(app):
 
                         download_file(
                             result_zip_dropbox_path,
-                            result_zip_local,
-                            DROPBOX_ACCESS_TOKEN
+                            result_zip_local
                         )
 
                         output_folder = os.path.join(ctx.TOURNAMENT_DIR, job_name)

@@ -54,7 +54,7 @@ def handler(job):
     if not output_zip_dropbox_path:
         return {"error": "Missing output_zip_dropbox_path"}
 
-    dbx = dropbox.Dropbox(dropbox_token)
+    dbx = dropbox.Dropbox(dropbox_token.strip())
 
     with tempfile.TemporaryDirectory() as tmp:
         input_zip = os.path.join(tmp, "input.zip")
