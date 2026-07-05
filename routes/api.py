@@ -95,3 +95,39 @@ def register_api_routes(app):
                 set_job(job_name, status)
 
         return jsonify(status)
+
+    @app.route("/api/debug/storage")
+    def debug_storage():
+        import glob
+
+        def latest_dirs(path):
+            if not path or not os.path.exists(path):
+                return []
+            items = []
+            for p in glob.glob(os.path.join(path, "*")):
+                items.append({
+                    "name": os.path.basename(p),
+                    "is_dir": os.path.isdir(p),
+                    "mtime": os.path.getmtime(p)
+                })
+            return sorted(items, key=lambda x: x["mtime"], reverse=True)[:20]
+
+        def latest_files(path):
+            if not path or not os.path.exists(path):
+                return []
+            items = []
+            for p in glob.glob(os.path.join(path, "*")):
+                if os.path.isfile(p):
+                    items.append({
+                        "name": os.path.basename(p),
+                        "size": os.path.getsize(p),
+                        "mtime": os.path.getmtime(p)
+                    })
+            return sorted(items, key=lambda x: x["mtime"], reverse=True)[:20]
+
+        return jsonify({
+            "tournament_dir": ctx.TOURNAMENT_DIR,
+            "latest_tournaments": latest_dirs(ctx.TOURNAMENT_DIR),
+            "latest_transport_files": latest_files(os.path.join(ctx.BASE_DIR, "DropboxTransport")),
+            "latest_uploads": latest_dirs(ctx.UPLOAD_DIR),
+        })
