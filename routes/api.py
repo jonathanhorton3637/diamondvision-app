@@ -131,3 +131,8 @@ def register_api_routes(app):
             "latest_transport_files": latest_files(os.path.join(ctx.BASE_DIR, "DropboxTransport")),
             "latest_uploads": latest_dirs(ctx.UPLOAD_DIR),
         })
+
+    @app.route("/api/debug/jobs")
+    def debug_jobs():
+        from core.job_store import _read_all
+        return jsonify(_read_all())
