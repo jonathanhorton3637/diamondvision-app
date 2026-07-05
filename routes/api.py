@@ -4,6 +4,7 @@ from core.job_store import get_job, set_job
 from core.runpod_client import get_status, enabled as runpod_enabled
 from core.dropbox_transport import download_file, unzip_file
 import os
+import glob
 
 
 def register_api_routes(app):
@@ -27,11 +28,7 @@ def register_api_routes(app):
             "error": ""
         })
 
-        if (
-            runpod_enabled()
-            and status.get("runpod_job_id")
-            and not status.get("complete")
-        ):
+        if runpod_enabled() and status.get("runpod_job_id") and not status.get("complete"):
             try:
                 rp = get_status(status["runpod_job_id"])
                 state = rp.get("status", "").upper()
@@ -57,10 +54,7 @@ def register_api_routes(app):
                         transport_dir = os.path.join(ctx.BASE_DIR, "DropboxTransport")
                         os.makedirs(transport_dir, exist_ok=True)
 
-                        result_zip_local = os.path.join(
-                            transport_dir,
-                            f"{job_name}_results.zip"
-                        )
+                        result_zip_local = os.path.join(transport_dir, f"{job_name}_results.zip")
 
                         download_file(result_zip_dropbox_path, result_zip_local)
 
@@ -98,8 +92,6 @@ def register_api_routes(app):
 
     @app.route("/api/debug/storage")
     def debug_storage():
-        import glob
-
         def latest_dirs(path):
             if not path or not os.path.exists(path):
                 return []
@@ -127,10 +119,12 @@ def register_api_routes(app):
 
         return jsonify({
             "tournament_dir": ctx.TOURNAMENT_DIR,
+            "upload_dir": ctx.UPLOAD_DIR,
             "latest_tournaments": latest_dirs(ctx.TOURNAMENT_DIR),
             "latest_transport_files": latest_files(os.path.join(ctx.BASE_DIR, "DropboxTransport")),
             "latest_uploads": latest_dirs(ctx.UPLOAD_DIR),
-        })\n
+        })
+
     @app.route("/api/debug/jobs")
     def debug_jobs():
         try:
@@ -138,4 +132,3 @@ def register_api_routes(app):
             return jsonify(_read_all())
         except Exception as e:
             return jsonify({"error": str(e)})
-\n
