@@ -136,3 +136,8 @@ def register_api_routes(app):
     def debug_jobs():
         from core.job_store import _read_all
         return jsonify(_read_all())
+
+    @app.route("/api/debug/jobs")
+    def debug_jobs():
+        from core.job_store import _read_all
+        return jsonify(_read_all())
