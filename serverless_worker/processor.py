@@ -1,4 +1,5 @@
 import os
+import json
 import cv2
 import csv
 import shutil
@@ -670,7 +671,56 @@ def process_mobile_job(input_dir, output_dir, roster_text="", progress_callback=
         w.writeheader()
         w.writerows(results)
 
+    metadata_images = []
+
+    for idx, r in enumerate(results, start=1):
+        filename = os.path.basename(r.get("Sorted Path") or r.get("Original File") or "")
+        ocr_conf = float(r.get("OCR Confidence") or 0)
+        score = float(r.get("Score") or 0)
+        duplicate = r.get("Duplicate") == "Yes"
+        category = r.get("Category", "")
+        assigned_player = r.get("Assigned Player", "Unknown") or "Unknown"
+
+        needs_review = (
+            assigned_player == "Unknown"
+            or ocr_conf < 0.50
+            or category == "Reject"
+        )
+
+        ai_confidence = int(max(0, min(100, round(((ocr_conf * 100) * 0.65) + (score * 0.35)))))
+
+        metadata_images.append({
+            "id": os.path.splitext(filename)[0],
+            "filename": filename,
+            "player": assigned_player,
+            "team": r.get("Assigned Team", "Unknown"),
+            "category": category,
+            "score": score,
+            "ocr": r.get("OCR Number", ""),
+            "ocr_confidence": round(ocr_conf * 100, 1),
+            "ocr_raw": r.get("OCR Raw", ""),
+            "duplicate": duplicate,
+            "favorite": False,
+            "needs_review": needs_review,
+            "ai_confidence": ai_confidence,
+            "original_path": r.get("Original File", ""),
+            "sorted_path": r.get("Sorted Path", ""),
+            "player_path": r.get("Player Path", "")
+        })
+
     summary = summarize_results(results)
+
+    metadata = {
+        "version": "4.1",
+        "summary": summary,
+        "images": metadata_images
+    }
+
+    metadata_path = os.path.join(output_dir, "Reports", "metadata.json")
+
+    with open(metadata_path, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2)
+
 
     if progress_callback:
         progress_callback(total, total, "Complete")
