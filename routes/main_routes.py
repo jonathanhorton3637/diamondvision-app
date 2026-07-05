@@ -194,3 +194,35 @@ def register_main_routes(app, safe_name, build_tournament_info, build_cards, fir
 
         stats={"best":count_images(os.path.join(tpath,"Best")),"keep":count_images(os.path.join(tpath,"Keep")),"unknown":count_images(os.path.join(tpath,"Players","Unknown")),"processed":len(done)}
         return render_template("live.html",tournament=tournament,message="Add new photos to this same tournament.",cards=build_cards(tournament),live_stats=stats)
+
+    @app.route("/review-workspace/<tournament>/<path:folder>")
+    def review_workspace(tournament, folder):
+        folder_path = os.path.join(ctx.TOURNAMENT_DIR, tournament, folder)
+        if not os.path.exists(folder_path):
+            abort(404)
+
+        images = [
+            f for f in sorted(os.listdir(folder_path))
+            if f.lower().endswith(ctx.IMAGE_EXTENSIONS)
+        ]
+
+        if not images:
+            abort(404)
+
+        current = request.args.get("file") or images[0]
+        if current not in images:
+            current = images[0]
+
+        index = images.index(current)
+
+        return render_template(
+            "review_workspace.html",
+            tournament=tournament,
+            folder=folder,
+            images=images,
+            current=current,
+            index=index,
+            total=len(images),
+            prev_file=images[index - 1] if index > 0 else None,
+            next_file=images[index + 1] if index < len(images) - 1 else None
+        )

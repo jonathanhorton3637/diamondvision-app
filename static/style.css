@@ -1668,3 +1668,248 @@ body[data-processing-stage="5"] .ai-softball-image{
     }
 }
 
+
+/* DiamondVision 4.2 Review Workspace */
+
+.review-body{
+    background:#050711;
+    color:white;
+}
+
+.review-shell{
+    min-height:100vh;
+    display:grid;
+    grid-template-columns:260px 1fr 320px;
+}
+
+.review-sidebar,
+.ai-panel{
+    background:#080c18;
+    border-color:rgba(255,255,255,.10);
+    padding:24px;
+}
+
+.review-sidebar{
+    border-right:1px solid rgba(255,255,255,.10);
+}
+
+.ai-panel{
+    border-left:1px solid rgba(255,255,255,.10);
+}
+
+.review-back{
+    display:block;
+    color:#c084fc;
+    font-weight:800;
+    margin:24px 0;
+}
+
+.review-context{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:12px;
+}
+
+.review-context span,
+.ai-stat span{
+    display:block;
+    color:#98a2b3;
+    font-size:12px;
+    font-weight:900;
+    margin-bottom:5px;
+    text-transform:uppercase;
+}
+
+.review-context strong,
+.ai-stat strong{
+    display:block;
+    font-size:14px;
+    line-height:1.35;
+}
+
+.review-nav{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:24px;
+}
+
+.review-nav a{
+    color:#d0d5dd;
+    background:rgba(255,255,255,.035);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:13px;
+    padding:12px;
+    font-weight:800;
+}
+
+.review-nav a:hover{
+    background:rgba(126,34,206,.22);
+    color:white;
+}
+
+.review-main{
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    min-width:0;
+}
+
+.review-topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:24px 30px;
+    border-bottom:1px solid rgba(255,255,255,.10);
+}
+
+.review-topbar h1{
+    margin:0;
+    font-size:34px;
+    letter-spacing:-.05em;
+}
+
+.review-count{
+    color:#c084fc;
+    font-weight:900;
+}
+
+.review-photo-stage{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+        radial-gradient(circle at center,rgba(126,34,206,.18),transparent 35%),
+        #030610;
+    overflow:hidden;
+    padding:24px;
+}
+
+.review-photo{
+    max-width:100%;
+    max-height:72vh;
+    border-radius:18px;
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
+}
+
+.review-arrow{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.18);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    font-weight:900;
+    z-index:5;
+}
+
+.review-arrow.left{
+    left:24px;
+}
+
+.review-arrow.right{
+    right:24px;
+}
+
+.filmstrip{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding:16px 24px;
+    background:#080c18;
+    border-top:1px solid rgba(255,255,255,.10);
+}
+
+.filmstrip-thumb{
+    width:86px;
+    height:70px;
+    border-radius:12px;
+    overflow:hidden;
+    flex:0 0 auto;
+    border:2px solid transparent;
+    opacity:.65;
+}
+
+.filmstrip-thumb.active{
+    border-color:#a855f7;
+    opacity:1;
+    box-shadow:0 0 18px rgba(168,85,247,.55);
+}
+
+.filmstrip-thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.ai-panel h2{
+    margin:0 0 20px;
+    font-size:24px;
+}
+
+.ai-stat{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:16px;
+    padding:15px;
+    margin-bottom:12px;
+}
+
+.purple{
+    color:#c084fc;
+}
+
+.review-actions{
+    display:grid;
+    gap:10px;
+    margin:22px 0;
+}
+
+.review-actions button{
+    width:100%;
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+.shortcut-card{
+    background:rgba(126,34,206,.18);
+    border:1px solid rgba(168,85,247,.30);
+    border-radius:18px;
+    padding:16px;
+}
+
+.shortcut-card strong{
+    display:block;
+    margin-bottom:10px;
+}
+
+.shortcut-card p{
+    margin:7px 0;
+    color:#d8b4fe;
+    font-weight:800;
+}
+
+@media(max-width:1100px){
+    .review-shell{
+        grid-template-columns:1fr;
+    }
+
+    .review-sidebar,
+    .ai-panel{
+        border:0;
+    }
+
+    .review-photo{
+        max-height:60vh;
+    }
+}
+

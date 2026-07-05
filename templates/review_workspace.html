@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Review Workspace - DiamondVision</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#5634f5">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="review-body">
+
+<div class="review-shell">
+
+    <aside class="review-sidebar">
+        <div class="sidebar-brand">
+            <span>💎</span>
+            <strong>DiamondVision</strong>
+        </div>
+
+        <a class="review-back" href="/gallery/{{ tournament }}/{{ folder }}">← Gallery</a>
+
+        <div class="review-context">
+            <span>Tournament</span>
+            <strong>{{ tournament }}</strong>
+        </div>
+
+        <div class="review-context">
+            <span>Folder</span>
+            <strong>{{ folder }}</strong>
+        </div>
+
+        <nav class="review-nav">
+            <a href="/tournament/{{ tournament }}">Results Dashboard</a>
+            <a href="/review/{{ tournament }}">Smart Review</a>
+            <a href="/gallery/{{ tournament }}/BestOfTournament">Best Photos</a>
+            <a href="/gallery/{{ tournament }}/Players">Players</a>
+            <a href="/gallery/{{ tournament }}/Reject">Rejects</a>
+            <a href="/gallery/{{ tournament }}/Duplicates">Duplicates</a>
+        </nav>
+    </aside>
+
+    <main class="review-main">
+
+        <header class="review-topbar">
+            <div>
+                <p class="eyebrow">Photo Review</p>
+                <h1>{{ folder }}</h1>
+            </div>
+
+            <div class="review-count">
+                {{ index + 1 }} / {{ total }}
+            </div>
+        </header>
+
+        <section class="review-photo-stage">
+            {% if prev_file %}
+            <a class="review-arrow left" href="/review-workspace/{{ tournament }}/{{ folder }}?file={{ prev_file }}">←</a>
+            {% endif %}
+
+            <img
+                class="review-photo"
+                src="/image/{{ tournament }}/{{ folder }}/{{ current }}"
+                alt="{{ current }}"
+            >
+
+            {% if next_file %}
+            <a class="review-arrow right" href="/review-workspace/{{ tournament }}/{{ folder }}?file={{ next_file }}">→</a>
+            {% endif %}
+        </section>
+
+        <section class="filmstrip">
+            {% for image in images %}
+            <a
+                class="filmstrip-thumb {% if image == current %}active{% endif %}"
+                href="/review-workspace/{{ tournament }}/{{ folder }}?file={{ image }}"
+            >
+                <img src="/image/{{ tournament }}/{{ folder }}/{{ image }}" loading="lazy">
+            </a>
+            {% endfor %}
+        </section>
+
+    </main>
+
+    <aside class="ai-panel">
+        <h2>AI Analysis</h2>
+
+        <div class="ai-stat">
+            <span>File</span>
+            <strong>{{ current }}</strong>
+        </div>
+
+        <div class="ai-stat">
+            <span>Folder</span>
+            <strong>{{ folder }}</strong>
+        </div>
+
+        <div class="ai-stat">
+            <span>Confidence</span>
+            <strong class="purple">Coming Soon</strong>
+        </div>
+
+        <div class="review-actions">
+            <button disabled>⭐ Favorite</button>
+            <button disabled>👤 Move Player</button>
+            <button disabled>🏆 Mark Best</button>
+            <button disabled>🗑 Reject</button>
+        </div>
+
+        <div class="shortcut-card">
+            <strong>Keyboard Shortcuts</strong>
+            <p>← Previous</p>
+            <p>→ Next</p>
+            <p>F Favorite</p>
+            <p>R Reject</p>
+        </div>
+    </aside>
+
+</div>
+
+<script>
+document.addEventListener("keydown", function(e){
+    if(e.key === "ArrowLeft"){
+        const prev = "{{ prev_file or '' }}";
+        if(prev){
+            window.location.href = "/review-workspace/{{ tournament }}/{{ folder }}?file=" + encodeURIComponent(prev);
+        }
+    }
+
+    if(e.key === "ArrowRight"){
+        const next = "{{ next_file or '' }}";
+        if(next){
+            window.location.href = "/review-workspace/{{ tournament }}/{{ folder }}?file=" + encodeURIComponent(next);
+        }
+    }
+});
+</script>
+
+</body>
+</html>
