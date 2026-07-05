@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ tournament }}</title>
+    <title>{{ tournament }} - DiamondVision</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="DiamondVision">
     <meta name="theme-color" content="#5634f5">
-
-    <link rel="apple-touch-icon" href="/static/icon-512.png">
     <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -17,109 +11,89 @@
 
 <div class="phone">
 
-    <a class="back" href="/">← Back</a>
+    <a class="back" href="/">← Dashboard</a>
 
-    <h1>{{ tournament }}</h1>
-
-    <div class="export-card">
-        <strong>Dropbox Parent Export</strong>
-        <p>Create a ZIP of all player folders for Dropbox sharing.</p>
-
-        <form method="POST" action="/export-dropbox/{{ tournament }}">
-            <button type="submit">CREATE DROPBOX ZIP</button>
-        </form>
-
-        {% if export_ready %}
-        <a class="download-button" href="/download-dropbox/{{ tournament }}">
-            DOWNLOAD DROPBOX ZIP
-        </a>
-        {% endif %}
+    <div class="brand">
+        <span>💎</span>
+        DiamondVision
     </div>
 
-    {% if summary %}
-    <div class="summary-card">
-        <strong>Processing Complete</strong>
+    <div class="results-hero">
+        <div>
+            <div class="small-label">Processing Results</div>
+            <h1>{{ tournament }}</h1>
+            <p>Review sorted images, player folders, rejects, duplicates, and reports.</p>
+        </div>
 
-        <div class="summary-grid">
-            <span>Total<br><b>{{ summary.total }}</b></span>
-            <span>Best<br><b>{{ summary.best }}</b></span>
-            <span>Keep<br><b>{{ summary.keep }}</b></span>
-            <span>Dupes<br><b>{{ summary.duplicates }}</b></span>
+        <form method="POST" action="/export-dropbox/{{ tournament }}">
+            <button type="submit">Create Export ZIP</button>
+        </form>
+    </div>
+
+    {% if export_ready %}
+    <a class="secondary-button" href="/download-dropbox/{{ tournament }}">
+        Download Dropbox ZIP
+    </a>
+    {% endif %}
+
+    {% if summary %}
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Total</span>
+            <strong>{{ summary.total }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Best</span>
+            <strong>{{ summary.best }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Keep</span>
+            <strong>{{ summary.keep }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Duplicates</span>
+            <strong>{{ summary.duplicates }}</strong>
         </div>
     </div>
     {% endif %}
 
-    {% for card in cards %}
-        {% if card.name == "BestOfTournament" and card.preview %}
-        <a class="cover-card" href="{{ card.url }}">
-            <img src="{{ card.preview }}">
-            <div class="cover-overlay">
-                <strong>Best Of Tournament</strong>
-                <span>{{ card.count }} top images</span>
-            </div>
-        </a>
-        {% endif %}
-    {% endfor %}
-
     <div class="section-row">
-        <h2>Team / Players</h2>
-        <span>Roster View</span>
+        <h2>Result Folders</h2>
+        <span>AI sorted</span>
     </div>
 
-    {% for card in cards %}
-        {% if card.name == "Players" %}
-        <a class="big-card" href="{{ card.url }}">
-
-            <div class="thumb">
+    <div class="results-grid">
+        {% for card in cards %}
+        <a class="result-card" href="{{ card.url }}">
+            <div class="result-preview">
                 {% if card.preview %}
                 <img src="{{ card.preview }}">
                 {% else %}
-                👥
+                <div class="result-icon">
+                    {% if card.name == "Players" %}👥
+                    {% elif card.name == "Teams" %}🏟️
+                    {% elif card.name == "BestOfTournament" %}⭐
+                    {% elif card.name == "Duplicates" %}⧉
+                    {% elif card.name == "Reject" %}⚠
+                    {% elif card.name == "Reports" %}📊
+                    {% else %}📸
+                    {% endif %}
+                </div>
                 {% endif %}
             </div>
 
-            <div>
-                <strong>Players</strong>
-                <p>{{ card.count }} player folders</p>
+            <div class="result-info">
+                <strong>{{ card.label }}</strong>
+                <p>{{ card.subtitle }}</p>
+                <span>{{ card.count }} items</span>
             </div>
-
-            <div class="chevron">›</div>
-
         </a>
-        {% endif %}
-    {% endfor %}
-
-    <div class="section-row">
-        <h2>Photo Buckets</h2>
-        <span>AI Sorted</span>
-    </div>
-
-    <div class="feature-grid">
-
-    {% for card in cards %}
-        {% if card.name != "Players" %}
-        <a class="feature-card" href="{{ card.url }}">
-
-            {% if card.preview %}
-            <img src="{{ card.preview }}" class="feature-img">
-            {% else %}
-            <div class="feature-icon">📸</div>
-            {% endif %}
-
-            <strong>{{ card.label }}</strong>
-            <p>{{ card.subtitle }}</p>
-            <span>{{ card.count }} photos</span>
-
-        </a>
-        {% endif %}
-    {% endfor %}
-
+        {% endfor %}
     </div>
 
 </div>
 
 <div class="bottom-nav">
-
     <a href="/">
         🏠
         <span>Home</span>
@@ -127,24 +101,18 @@
 
     <a href="/new">
         ➕
-        <span>Import</span>
+        <span>Upload</span>
     </a>
 
-    <span class="active">
-        👥
-        <small>Teams</small>
-    </span>
-
-    <span>
-        ⭐
-        <small>Best</small>
-    </span>
+    <a class="active" href="/tournament/{{ tournament }}">
+        💎
+        <span>Results</span>
+    </a>
 
     <a href="/more">
         ☰
         <span>More</span>
     </a>
-
 </div>
 
 </body>
