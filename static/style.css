@@ -1410,3 +1410,191 @@ body[data-processing-stage="5"] .jersey-number{
     }
 }
 
+
+/* DiamondVision 4.1 cinematic AI softball animation override */
+
+.ai-softball-scene{
+    min-height:520px;
+    background:
+        radial-gradient(circle at 62% 43%,rgba(190,70,255,.35),transparent 18%),
+        radial-gradient(circle at center,rgba(126,34,206,.22),transparent 38%),
+        radial-gradient(circle at bottom,rgba(255,255,120,.06),transparent 40%),
+        #030610;
+}
+
+.ai-softball-scene::before{
+    content:"";
+    position:absolute;
+    width:72%;
+    height:34%;
+    left:3%;
+    top:32%;
+    background:
+        repeating-linear-gradient(
+            100deg,
+            transparent 0 18px,
+            rgba(216,83,255,.38) 19px,
+            transparent 21px
+        );
+    filter:blur(.5px);
+    opacity:.75;
+    animation:energyStream 1.8s linear infinite;
+}
+
+.ai-softball-scene::after{
+    content:"";
+    position:absolute;
+    width:330px;
+    height:330px;
+    border:5px solid rgba(210,70,255,.88);
+    border-left-color:transparent;
+    border-bottom-color:rgba(210,70,255,.28);
+    border-radius:50%;
+    box-shadow:
+        0 0 24px rgba(210,70,255,.9),
+        0 0 70px rgba(210,70,255,.45),
+        inset 0 0 30px rgba(210,70,255,.16);
+    animation:purpleHalo 3.2s linear infinite;
+    z-index:2;
+}
+
+.softball{
+    width:220px;
+    height:220px;
+    background:
+        radial-gradient(circle at 32% 25%,#fffba8 0,#f4ea45 30%,#d3c51d 62%,#8f840b 100%);
+    box-shadow:
+        inset -28px -32px 44px rgba(0,0,0,.34),
+        inset 18px 16px 26px rgba(255,255,255,.28),
+        0 0 34px rgba(210,70,255,.95),
+        0 0 110px rgba(210,70,255,.52);
+    animation:softballFloat 3s ease-in-out infinite;
+}
+
+.softball::before,
+.softball::after{
+    content:"";
+    position:absolute;
+    top:16px;
+    width:72px;
+    height:188px;
+    border:8px solid transparent;
+    border-left-color:#b31218;
+    border-radius:50%;
+    filter:drop-shadow(0 0 2px rgba(0,0,0,.5));
+}
+
+.softball::before{
+    left:45px;
+    transform:rotate(-24deg);
+}
+
+.softball::after{
+    right:45px;
+    transform:rotate(24deg) scaleX(-1);
+}
+
+.stitch{
+    display:none;
+}
+
+.scan-line{
+    width:88%;
+    height:4px;
+    left:2%;
+    background:linear-gradient(90deg,transparent,#f0a6ff,#ffffff,#b428ff,transparent);
+    box-shadow:
+        0 0 16px #e879ff,
+        0 0 40px rgba(216,83,255,.8);
+    animation:scanAcrossBall 1.65s ease-in-out infinite;
+}
+
+.jersey-number{
+    color:#f4d2ff;
+    text-shadow:
+        0 0 12px rgba(216,83,255,.95),
+        0 0 30px rgba(216,83,255,.7);
+}
+
+.orbit-folder{
+    border-color:rgba(216,83,255,.38);
+    background:rgba(126,34,206,.18);
+    color:#f0d6ff;
+    box-shadow:0 0 20px rgba(216,83,255,.15);
+}
+
+@keyframes energyStream{
+    from{
+        transform:translateX(-35px);
+        opacity:.45;
+    }
+    50%{
+        opacity:.9;
+    }
+    to{
+        transform:translateX(35px);
+        opacity:.45;
+    }
+}
+
+@keyframes purpleHalo{
+    from{
+        transform:rotate(0deg) scale(1);
+    }
+    50%{
+        transform:rotate(180deg) scale(1.04);
+    }
+    to{
+        transform:rotate(360deg) scale(1);
+    }
+}
+
+@keyframes scanAcrossBall{
+    0%{
+        transform:translateX(-18%) rotate(-5deg);
+        opacity:0;
+    }
+    20%{
+        opacity:1;
+    }
+    80%{
+        opacity:1;
+    }
+    100%{
+        transform:translateX(26%) rotate(-5deg);
+        opacity:0;
+    }
+}
+
+@media(max-width:720px){
+    .ai-softball-scene{
+        min-height:390px;
+    }
+
+    .softball{
+        width:165px;
+        height:165px;
+    }
+
+    .softball::before,
+    .softball::after{
+        top:13px;
+        width:54px;
+        height:138px;
+        border-width:6px;
+    }
+
+    .softball::before{
+        left:34px;
+    }
+
+    .softball::after{
+        right:34px;
+    }
+
+    .ai-softball-scene::after{
+        width:245px;
+        height:245px;
+    }
+}
+
