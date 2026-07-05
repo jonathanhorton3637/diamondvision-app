@@ -142,7 +142,7 @@ const canvas = document.getElementById("softball-canvas");
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
-camera.position.set(0, 0, 5);
+camera.position.set(0, 0.1, 7);
 
 const renderer = new THREE.WebGLRenderer({
     canvas,
@@ -177,9 +177,10 @@ loader.load("/static/models/softball.glb", function(gltf){
     const size = box.getSize(new THREE.Vector3());
 
     softballModel.position.sub(center);
+    softballModel.position.y -= 0.15;
 
     const maxDim = Math.max(size.x, size.y, size.z);
-    const scale = 2.4 / maxDim;
+    const scale = 1.25 / maxDim;
     softballModel.scale.setScalar(scale);
 
     softballModel.rotation.x = 0.2;
