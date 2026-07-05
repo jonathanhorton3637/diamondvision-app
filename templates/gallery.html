@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ folder }}</title>
+    <title>{{ folder }} - DiamondVision</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="DiamondVision">
     <meta name="theme-color" content="#5634f5">
-
-    <link rel="apple-touch-icon" href="/static/icon-512.png">
     <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -17,53 +11,50 @@
 
 <div class="phone">
 
-    <a class="back" href="/tournament/{{ tournament }}">← Back</a>
+    <a class="back" href="/tournament/{{ tournament }}">← Results</a>
 
-    <h1>{{ folder }}</h1>
-
-    {% if subfolders %}
-
-    <div class="section-row">
-        <h2>Players / Folders</h2>
-        <span>{{ subfolders|length }}</span>
+    <div class="gallery-header">
+        <div>
+            <div class="small-label">{{ tournament }}</div>
+            <h1>{{ folder }}</h1>
+        </div>
     </div>
 
-    {% for sub in subfolders %}
-    <a class="player-card" href="{{ sub.url }}">
+    {% if subfolders %}
+    <div class="section-row">
+        <h2>Folders</h2>
+        <span>{{ subfolders|length }} total</span>
+    </div>
 
-        <div class="player-avatar">
-
-            {% if sub.preview %}
+    <div class="folder-grid">
+        {% for sub in subfolders %}
+        <a class="folder-card" href="{{ sub.url }}">
+            <div class="folder-preview">
+                {% if sub.preview %}
                 <img src="/image/{{ tournament }}/{{ folder }}/{{ sub.name }}/{{ sub.preview }}">
-            {% else %}
-                👤
-            {% endif %}
+                {% else %}
+                <div class="result-icon">👤</div>
+                {% endif %}
+            </div>
 
-        </div>
-
-        <div>
-            <strong>{{ sub.name }}</strong>
-            <p>{{ sub.count }} photos</p>
-        </div>
-
-        <div class="chevron">›</div>
-
-    </a>
-    {% endfor %}
-
+            <div class="folder-info">
+                <strong>{{ sub.name }}</strong>
+                <span>{{ sub.count }} photos</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
     {% endif %}
 
     {% if images %}
-
     <div class="section-row">
         <h2>Photos</h2>
-        <span>{{ images|length }} Photos</span>
+        <span>{{ images|length }} total</span>
     </div>
 
     <div class="photo-grid">
         {% for image in images %}
         <div class="photo-tile">
-
             <a href="/photo/{{ tournament }}/{{ folder }}?file={{ image }}">
                 <img src="/image/{{ tournament }}/{{ folder }}/{{ image }}" loading="lazy">
             </a>
@@ -72,23 +63,20 @@
             <form class="move-form" method="POST" action="/move-photo/{{ tournament }}/{{ folder }}/{{ image }}">
                 <select name="target_player">
                     {% for player in players %}
-                        <option value="{{ player }}">{{ player }}</option>
+                    <option value="{{ player }}">{{ player }}</option>
                     {% endfor %}
                 </select>
                 <button type="submit">Move</button>
             </form>
             {% endif %}
-
         </div>
         {% endfor %}
     </div>
-
     {% endif %}
 
 </div>
 
 <div class="bottom-nav">
-
     <a href="/">
         🏠
         <span>Home</span>
@@ -96,24 +84,18 @@
 
     <a href="/new">
         ➕
-        <span>Import</span>
+        <span>Upload</span>
     </a>
 
-    <span class="active">
-        👥
-        <small>Teams</small>
-    </span>
-
-    <span>
-        ⭐
-        <small>Best</small>
-    </span>
+    <a class="active" href="/tournament/{{ tournament }}">
+        💎
+        <span>Results</span>
+    </a>
 
     <a href="/more">
         ☰
         <span>More</span>
     </a>
-
 </div>
 
 </body>
