@@ -52,6 +52,25 @@
         </div>
         {% endif %}
 
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <span>Total Jobs</span>
+                <strong>{{ tournaments|length }}</strong>
+            </div>
+            <div class="stat-card">
+                <span>Total Photos</span>
+                <strong>{{ tournaments|sum(attribute='photos') }}</strong>
+            </div>
+            <div class="stat-card">
+                <span>Best Shots</span>
+                <strong>{{ tournaments|sum(attribute='best') }}</strong>
+            </div>
+            <div class="stat-card">
+                <span>Players</span>
+                <strong>{{ tournaments|sum(attribute='players') }}</strong>
+            </div>
+        </div>
+
         <div class="section-row">
             <h2>Recent Jobs</h2>
             <span>{{ tournaments|length }} total</span>

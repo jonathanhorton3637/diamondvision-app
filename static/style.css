@@ -886,3 +886,17 @@ textarea:focus{
     }
 }
 
+
+.dashboard-stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin:24px 0 10px;
+}
+
+@media(max-width:860px){
+    .dashboard-stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
