@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>New Job</title>
+    <title>Upload Photos - DiamondVision</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="DiamondVision">
     <meta name="theme-color" content="#5634f5">
-
-    <link rel="apple-touch-icon" href="/static/icon-512.png">
     <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -21,25 +15,30 @@
 
     <div class="brand">
         <span>💎</span>
-        New Job
+        Upload Photos
     </div>
 
     <div class="small-label">
-        Upload one game. Sort one team or two teams.
+        Create a job, add rosters, and send photos to DiamondVision.
     </div>
 
     {% if not processor_available %}
     <div class="warning-card">
-        Viewer mode only. Processing packages are not available.
+        Cloud processing is active. Local processor is not required on Render.
     </div>
     {% endif %}
 
     <form class="form-card" method="POST" enctype="multipart/form-data">
 
-        <label>Tournament / Game Name</label>
-        <input name="tournament" placeholder="Texas Glory Showcase">
+        <div class="upload-intro">
+            <h1>New Processing Job</h1>
+            <p>Start with the game name, choose single-team or two-team mode, then upload your photos.</p>
+        </div>
 
-        <label>Mode</label>
+        <label>Game or Tournament Name</label>
+        <input name="tournament" placeholder="Texas Glory Showcase" required>
+
+        <label>Sorting Mode</label>
         <select name="job_mode" id="job-mode">
             <option value="single">Single Team</option>
             <option value="two_team">Two-Team Mode</option>
@@ -48,10 +47,10 @@
         <div class="team-box">
             <h2>Team 1</h2>
 
-            <label>Team 1 Name</label>
+            <label>Team Name</label>
             <input name="team" placeholder="Texas Insanity">
 
-            <label>Team 1 Jersey Color</label>
+            <label>Jersey Color</label>
             <select name="team1_color">
                 <option value="">Auto / Not Sure</option>
                 <option value="white">White</option>
@@ -63,17 +62,17 @@
                 <option value="gray">Gray</option>
             </select>
 
-            <label>Team 1 Roster</label>
-            <textarea name="roster" rows="8" placeholder="1 Ava Reynolds&#10;2 Mia Carter&#10;3 Harper Collins"></textarea>
+            <label>Roster</label>
+            <textarea name="roster" rows="7" placeholder="1 Ava Reynolds&#10;2 Mia Carter&#10;3 Harper Collins"></textarea>
         </div>
 
         <div class="team-box two-team-only hidden">
             <h2>Team 2</h2>
 
-            <label>Team 2 Name</label>
+            <label>Team Name</label>
             <input name="team2" placeholder="Opponent">
 
-            <label>Team 2 Jersey Color</label>
+            <label>Jersey Color</label>
             <select name="team2_color">
                 <option value="">Auto / Not Sure</option>
                 <option value="white">White</option>
@@ -85,26 +84,25 @@
                 <option value="gray">Gray</option>
             </select>
 
-            <label>Team 2 Roster</label>
-            <textarea name="roster2" rows="8" placeholder="1 Emma Brooks&#10;2 Olivia Parker&#10;3 Sophia Bennett"></textarea>
+            <label>Roster</label>
+            <textarea name="roster2" rows="7" placeholder="1 Emma Brooks&#10;2 Olivia Parker&#10;3 Sophia Bennett"></textarea>
         </div>
 
-        <label>Add Photos</label>
-
-        <input
-            id="photo-input"
-            type="file"
-            name="photos"
-            multiple
-            accept="image/jpeg,image/png,.jpg,.jpeg,.png,.nef"
-        >
-
-        <div id="file-count" class="file-count">
-            No files selected
+        <label>Photos</label>
+        <div class="upload-box">
+            <input
+                id="photo-input"
+                type="file"
+                name="photos"
+                multiple
+                required
+                accept="image/jpeg,image/png,.jpg,.jpeg,.png,.nef"
+            >
+            <div id="file-count" class="file-count">No files selected</div>
         </div>
 
         <button type="submit">
-            START DIAMONDVISION
+            START PROCESSING
         </button>
 
     </form>
@@ -112,7 +110,6 @@
 </div>
 
 <div class="bottom-nav">
-
     <a href="/">
         🏠
         <span>Home</span>
@@ -120,24 +117,13 @@
 
     <a class="active" href="/new">
         ➕
-        <span>Import</span>
+        <span>Upload</span>
     </a>
-
-    <span>
-        👥
-        <small>Teams</small>
-    </span>
-
-    <span>
-        ⭐
-        <small>Best</small>
-    </span>
 
     <a href="/more">
         ☰
         <span>More</span>
     </a>
-
 </div>
 
 <script>
@@ -148,23 +134,16 @@ const twoTeamBlocks = document.querySelectorAll(".two-team-only");
 
 input.addEventListener("change", function(){
     const count = this.files.length;
-
-    if(count === 0){
-        counter.innerText = "No files selected";
-    } else if(count === 1){
-        counter.innerText = "1 file selected";
-    } else {
-        counter.innerText = count + " files selected";
-    }
+    counter.innerText = count === 0
+        ? "No files selected"
+        : count === 1
+            ? "1 file selected"
+            : count + " files selected";
 });
 
 mode.addEventListener("change", function(){
     twoTeamBlocks.forEach(block => {
-        if(mode.value === "two_team"){
-            block.classList.remove("hidden");
-        } else {
-            block.classList.add("hidden");
-        }
+        block.classList.toggle("hidden", mode.value !== "two_team");
     });
 });
 </script>
