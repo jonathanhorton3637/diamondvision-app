@@ -48,21 +48,11 @@
 
             <div class="ai-softball-card">
                 <div class="ai-softball-scene">
-                    <div class="scan-line"></div>
-
-                    <div class="jersey-number n1">12</div>
-                    <div class="jersey-number n2">24</div>
-                    <div class="jersey-number n3">8</div>
-                    <div class="jersey-number n4">99</div>
-
-                    <div class="orbit-folder f1">Players</div>
-                    <div class="orbit-folder f2">Best</div>
-                    <div class="orbit-folder f3">Reports</div>
-
-                    <div id="softball" class="softball">
-                        <div class="stitch stitch-left"></div>
-                        <div class="stitch stitch-right"></div>
-                    </div>
+                    <img
+                        class="ai-softball-image"
+                        src="/static/ai-softball-purple.png"
+                        alt="DiamondVision AI softball"
+                    >
                 </div>
 
                 <div class="processing-scoreboard">
@@ -170,7 +160,7 @@ function updateStatus(){
                 setStage(2);
             } else if(lower.includes("runpod") || lower.includes("processing")){
                 setStage(3);
-            } else if(lower.includes("download") || lower.includes("complete, downloading")){
+            } else if(lower.includes("download") || lower.includes("extract") || lower.includes("galleries")){
                 setStage(4);
             } else if(data.complete){
                 setStage(5);

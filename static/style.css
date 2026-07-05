@@ -1598,3 +1598,73 @@ body[data-processing-stage="5"] .jersey-number{
     }
 }
 
+
+/* DiamondVision 4.1 image-based AI softball visual */
+
+.ai-softball-scene{
+    min-height:540px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    background:#030610 !important;
+    border-radius:28px;
+    overflow:hidden;
+    position:relative;
+}
+
+.ai-softball-scene::before,
+.ai-softball-scene::after,
+.softball,
+.stitch,
+.scan-line,
+.jersey-number,
+.orbit-folder{
+    display:none !important;
+}
+
+.ai-softball-image{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    animation:
+        aiSoftballFloat 4s ease-in-out infinite,
+        aiSoftballGlow 3s ease-in-out infinite;
+    user-select:none;
+    pointer-events:none;
+}
+
+body[data-processing-stage="5"] .ai-softball-image{
+    filter:
+        drop-shadow(0 0 30px rgba(34,197,94,.65))
+        brightness(1.08);
+}
+
+@keyframes aiSoftballFloat{
+    0%,100%{
+        transform:scale(1);
+    }
+    50%{
+        transform:scale(1.025);
+    }
+}
+
+@keyframes aiSoftballGlow{
+    0%,100%{
+        filter:
+            drop-shadow(0 0 22px rgba(190,70,255,.65))
+            brightness(1);
+    }
+    50%{
+        filter:
+            drop-shadow(0 0 46px rgba(216,83,255,.9))
+            brightness(1.08);
+    }
+}
+
+@media(max-width:720px){
+    .ai-softball-scene{
+        min-height:360px !important;
+    }
+}
+
