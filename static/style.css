@@ -1105,3 +1105,308 @@ textarea:focus{
     }
 }
 
+
+.processing-hero-v4{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:24px;
+    background:
+        radial-gradient(circle at top right,rgba(90,62,240,.22),transparent 34%),
+        #0b1020;
+    color:white;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:30px;
+    padding:36px;
+    box-shadow:var(--shadow);
+    margin-bottom:24px;
+}
+
+.processing-hero-v4 h1{
+    margin:0 0 10px;
+    font-size:46px;
+    line-height:1;
+    letter-spacing:-.06em;
+}
+
+.processing-hero-v4 p{
+    color:#c8cce0;
+    font-size:17px;
+    margin:0;
+}
+
+.auto-refresh-pill{
+    white-space:nowrap;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:10px 14px;
+    color:#d7dbef;
+    font-weight:800;
+    font-size:13px;
+}
+
+.auto-refresh-pill span{
+    display:inline-block;
+    width:8px;
+    height:8px;
+    border-radius:999px;
+    background:#22c55e;
+    margin-left:8px;
+    box-shadow:0 0 14px #22c55e;
+}
+
+.processing-layout-v4{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.ai-softball-card,
+.stage-panel{
+    background:#0b1020;
+    color:white;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:30px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+}
+
+.ai-softball-scene{
+    position:relative;
+    min-height:420px;
+    background:
+        radial-gradient(circle at center,rgba(139,92,246,.28),transparent 34%),
+        radial-gradient(circle at bottom,rgba(255,160,70,.18),transparent 32%),
+        #070b18;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.softball{
+    position:relative;
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    background:
+        radial-gradient(circle at 35% 30%,#fff7a8,#e8df45 48%,#c8bc1f);
+    box-shadow:
+        0 0 34px rgba(139,92,246,.75),
+        0 0 90px rgba(139,92,246,.38);
+    animation:softballFloat 3s ease-in-out infinite, softballSpin 5s linear infinite;
+    z-index:3;
+}
+
+.stitch{
+    position:absolute;
+    top:18px;
+    width:38px;
+    height:112px;
+    border:4px dashed #b71c1c;
+    border-top:0;
+    border-bottom:0;
+    opacity:.9;
+}
+
+.stitch-left{
+    left:28px;
+    border-radius:50% 0 0 50%;
+    transform:rotate(12deg);
+}
+
+.stitch-right{
+    right:28px;
+    border-radius:0 50% 50% 0;
+    transform:rotate(-12deg);
+}
+
+.scan-line{
+    position:absolute;
+    width:160%;
+    height:5px;
+    background:linear-gradient(90deg,transparent,#9b7cff,transparent);
+    box-shadow:0 0 22px #9b7cff;
+    animation:scanSweep 2.2s ease-in-out infinite;
+    z-index:4;
+}
+
+.jersey-number{
+    position:absolute;
+    color:#c9b8ff;
+    font-size:28px;
+    font-weight:900;
+    opacity:0;
+    text-shadow:0 0 18px rgba(139,92,246,.9);
+    animation:numberPulse 3.6s ease-in-out infinite;
+}
+
+.n1{top:88px;left:22%;animation-delay:.2s}
+.n2{top:120px;right:18%;animation-delay:.9s}
+.n3{bottom:110px;left:26%;animation-delay:1.6s}
+.n4{bottom:90px;right:24%;animation-delay:2.3s}
+
+.orbit-folder{
+    position:absolute;
+    padding:8px 12px;
+    border-radius:12px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.16);
+    color:#d8d2ff;
+    font-size:12px;
+    font-weight:900;
+    opacity:.75;
+    animation:folderOrbit 6s ease-in-out infinite;
+}
+
+.f1{top:82px;left:50%;animation-delay:.1s}
+.f2{bottom:86px;left:22%;animation-delay:1.5s}
+.f3{bottom:98px;right:20%;animation-delay:2.8s}
+
+.processing-scoreboard{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    border-top:1px solid rgba(255,255,255,.10);
+}
+
+.processing-scoreboard div{
+    padding:22px;
+}
+
+.processing-scoreboard div + div{
+    border-left:1px solid rgba(255,255,255,.10);
+}
+
+.processing-scoreboard span{
+    display:block;
+    color:#aab1c5;
+    font-weight:800;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.processing-scoreboard strong{
+    font-size:28px;
+    letter-spacing:-.04em;
+}
+
+.stage-panel{
+    padding:26px;
+}
+
+.stage-panel h2{
+    margin:0 0 18px;
+    font-size:24px;
+}
+
+.stage{
+    display:grid;
+    grid-template-columns:48px 1fr;
+    gap:14px;
+    align-items:center;
+    padding:16px;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:18px;
+    background:rgba(255,255,255,.035);
+    margin-bottom:12px;
+}
+
+.stage-dot{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:rgba(255,255,255,.10);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#aab1c5;
+    font-weight:900;
+}
+
+.stage strong{
+    display:block;
+    margin-bottom:4px;
+}
+
+.stage p{
+    margin:0;
+    color:#aab1c5;
+    font-size:14px;
+}
+
+.stage.complete .stage-dot{
+    background:#22c55e;
+    color:white;
+    box-shadow:0 0 18px rgba(34,197,94,.4);
+}
+
+.stage.active{
+    border-color:#8b5cf6;
+    background:rgba(90,62,240,.18);
+}
+
+.stage.active .stage-dot{
+    background:#5a3ef0;
+    color:white;
+    box-shadow:0 0 24px rgba(139,92,246,.8);
+    animation:pulseDot 1.5s ease-in-out infinite;
+}
+
+body[data-processing-stage="5"] .softball{
+    box-shadow:
+        0 0 36px rgba(34,197,94,.85),
+        0 0 90px rgba(34,197,94,.42);
+}
+
+body[data-processing-stage="5"] .scan-line,
+body[data-processing-stage="5"] .jersey-number{
+    display:none;
+}
+
+@keyframes softballFloat{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-14px)}
+}
+
+@keyframes softballSpin{
+    from{rotate:0deg}
+    to{rotate:360deg}
+}
+
+@keyframes scanSweep{
+    0%{transform:translateY(-170px) rotate(-8deg);opacity:0}
+    20%{opacity:1}
+    80%{opacity:1}
+    100%{transform:translateY(170px) rotate(-8deg);opacity:0}
+}
+
+@keyframes numberPulse{
+    0%,100%{opacity:0;transform:scale(.85)}
+    35%,65%{opacity:1;transform:scale(1)}
+}
+
+@keyframes folderOrbit{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-16px)}
+}
+
+@keyframes pulseDot{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.08)}
+}
+
+@media(max-width:980px){
+    .processing-layout-v4{
+        grid-template-columns:1fr;
+    }
+
+    .processing-hero-v4{
+        display:block;
+    }
+
+    .auto-refresh-pill{
+        display:inline-block;
+        margin-top:18px;
+    }
+}
+

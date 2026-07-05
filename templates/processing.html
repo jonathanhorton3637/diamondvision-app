@@ -3,62 +3,180 @@
 <head>
     <title>Processing - DiamondVision</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#5634f5">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-<div class="phone">
+<div class="app-shell">
 
-    <div class="brand">
-        <span>💎</span>
-        DiamondVision
-    </div>
-
-    <div class="small-label">
-        Your photos are being processed in the cloud.
-    </div>
-
-    <div class="processing-card">
-
-        <h1 id="percent">0%</h1>
-
-        <div class="progress-shell">
-            <div id="progress-bar" class="progress-bar"></div>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>💎</span>
+            <strong>DiamondVision</strong>
         </div>
 
-        <p id="message">Starting...</p>
+        <nav class="sidebar-nav">
+            <a href="/">Dashboard</a>
+            <a href="/new">New Job</a>
+            <a href="/tournaments">Recent Jobs</a>
+            <a class="active" href="#">Processing</a>
+        </nav>
 
-        <div class="progress-meta">
-            <span id="done">0</span>
-            /
-            <span id="total">0</span>
-            photos
+        <div class="sidebar-footer">
+            AI Photo Intelligence
         </div>
+    </aside>
 
-        <div class="processing-note">
-            Keep this page open. DiamondVision will open your results automatically when processing is complete.
-        </div>
+    <main class="main-panel">
+
+        <a class="back" href="/">← Dashboard</a>
+
+        <section class="processing-hero-v4">
+            <div>
+                <p class="eyebrow">DiamondVision AI</p>
+                <h1>Processing your photos.</h1>
+                <p id="message">Starting...</p>
+            </div>
+
+            <div class="auto-refresh-pill">
+                Auto-refresh ON <span></span>
+            </div>
+        </section>
+
+        <section class="processing-layout-v4">
+
+            <div class="ai-softball-card">
+                <div class="ai-softball-scene">
+                    <div class="scan-line"></div>
+
+                    <div class="jersey-number n1">12</div>
+                    <div class="jersey-number n2">24</div>
+                    <div class="jersey-number n3">8</div>
+                    <div class="jersey-number n4">99</div>
+
+                    <div class="orbit-folder f1">Players</div>
+                    <div class="orbit-folder f2">Best</div>
+                    <div class="orbit-folder f3">Reports</div>
+
+                    <div id="softball" class="softball">
+                        <div class="stitch stitch-left"></div>
+                        <div class="stitch stitch-right"></div>
+                    </div>
+                </div>
+
+                <div class="processing-scoreboard">
+                    <div>
+                        <span>Photos</span>
+                        <strong><span id="done">0</span>/<span id="total">0</span></strong>
+                    </div>
+                    <div>
+                        <span>Overall Progress</span>
+                        <strong id="percent">0%</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stage-panel">
+                <h2>Processing Stages</h2>
+
+                <div class="stage complete" id="stage-upload">
+                    <span class="stage-dot">✓</span>
+                    <div>
+                        <strong>Upload Complete</strong>
+                        <p>Photos received by DiamondVision</p>
+                    </div>
+                </div>
+
+                <div class="stage" id="stage-cloud">
+                    <span class="stage-dot">2</span>
+                    <div>
+                        <strong>Sent to AI Cloud</strong>
+                        <p>Waiting for cloud worker</p>
+                    </div>
+                </div>
+
+                <div class="stage" id="stage-ai">
+                    <span class="stage-dot">3</span>
+                    <div>
+                        <strong>AI Vision</strong>
+                        <p>Reading jerseys and scoring photos</p>
+                    </div>
+                </div>
+
+                <div class="stage" id="stage-gallery">
+                    <span class="stage-dot">4</span>
+                    <div>
+                        <strong>Building Galleries</strong>
+                        <p>Preparing player folders and reports</p>
+                    </div>
+                </div>
+
+                <div class="stage" id="stage-ready">
+                    <span class="stage-dot">5</span>
+                    <div>
+                        <strong>Ready to Review</strong>
+                        <p>Results will open automatically</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
 
         <a id="results-button" class="hero-button hidden" href="/tournament/{{ job_name }}">
-            VIEW RESULTS
+            View Results
         </a>
 
-    </div>
+    </main>
 
 </div>
 
 <script>
+function setStage(stage){
+    document.querySelectorAll(".stage").forEach(s => {
+        s.classList.remove("active", "complete");
+    });
+
+    document.getElementById("stage-upload").classList.add("complete");
+
+    if(stage >= 2) document.getElementById("stage-cloud").classList.add("complete");
+    if(stage >= 3) document.getElementById("stage-ai").classList.add("complete");
+    if(stage >= 4) document.getElementById("stage-gallery").classList.add("complete");
+    if(stage >= 5) document.getElementById("stage-ready").classList.add("complete");
+
+    if(stage === 2) document.getElementById("stage-cloud").classList.add("active");
+    if(stage === 3) document.getElementById("stage-ai").classList.add("active");
+    if(stage === 4) document.getElementById("stage-gallery").classList.add("active");
+    if(stage === 5) document.getElementById("stage-ready").classList.add("active");
+
+    document.body.dataset.processingStage = stage;
+}
+
 function updateStatus(){
     fetch("/api/status/{{ job_name }}")
         .then(response => response.json())
         .then(data => {
             const percent = data.percent || 0;
+            const msg = data.message || "Processing...";
 
             document.getElementById("percent").innerText = percent + "%";
-            document.getElementById("progress-bar").style.width = percent + "%";
-            document.getElementById("message").innerText = data.message || "Processing...";
+            document.getElementById("message").innerText = msg;
             document.getElementById("done").innerText = data.done || 0;
             document.getElementById("total").innerText = data.total || 0;
+
+            const lower = msg.toLowerCase();
+
+            if(lower.includes("queued") || lower.includes("waiting")){
+                setStage(2);
+            } else if(lower.includes("runpod") || lower.includes("processing")){
+                setStage(3);
+            } else if(lower.includes("download") || lower.includes("complete, downloading")){
+                setStage(4);
+            } else if(data.complete){
+                setStage(5);
+            } else {
+                setStage(3);
+            }
 
             if(data.error){
                 document.getElementById("message").innerText = "Error: " + data.error;
@@ -67,11 +185,11 @@ function updateStatus(){
             }
 
             if(data.complete){
-                document.getElementById("message").innerText = "Complete — opening results...";
+                document.getElementById("message").innerText = "Ready to review.";
                 document.getElementById("results-button").classList.remove("hidden");
                 setTimeout(function(){
                     window.location.href = document.getElementById("results-button").href;
-                }, 1500);
+                }, 1800);
                 return;
             }
 
@@ -79,10 +197,12 @@ function updateStatus(){
         })
         .catch(() => {
             document.getElementById("message").innerText = "Waiting for server...";
+            setStage(2);
             setTimeout(updateStatus, 2000);
         });
 }
 
+setStage(2);
 updateStatus();
 </script>
 
