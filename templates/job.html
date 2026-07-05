@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Upload Photos - DiamondVision</title>
+    <title>New Job - DiamondVision</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#5634f5">
     <link rel="manifest" href="/static/manifest.json">
@@ -9,127 +9,186 @@
 </head>
 <body>
 
-<div class="phone">
+<div class="app-shell">
 
-    <a class="back" href="/">← Back</a>
-
-    <div class="brand">
-        <span>💎</span>
-        Upload Photos
-    </div>
-
-    <div class="small-label">
-        Create a job, add rosters, and send photos to DiamondVision.
-    </div>
-
-    {% if not processor_available %}
-    <div class="warning-card">
-        Cloud processing is active. Local processor is not required on Render.
-    </div>
-    {% endif %}
-
-    <form class="form-card" method="POST" enctype="multipart/form-data">
-
-        <div class="upload-intro">
-            <h1>New Processing Job</h1>
-            <p>Start with the game name, choose single-team or two-team mode, then upload your photos.</p>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>💎</span>
+            <strong>DiamondVision</strong>
         </div>
 
-        <label>Game or Tournament Name</label>
-        <input name="tournament" placeholder="Texas Glory Showcase" required>
+        <nav class="sidebar-nav">
+            <a href="/">Dashboard</a>
+            <a class="active" href="/new">New Job</a>
+            <a href="/tournaments">Recent Jobs</a>
+            <a href="/more">More</a>
+        </nav>
 
-        <label>Sorting Mode</label>
-        <select name="job_mode" id="job-mode">
-            <option value="single">Single Team</option>
-            <option value="two_team">Two-Team Mode</option>
-        </select>
-
-        <div class="team-box">
-            <h2>Team 1</h2>
-
-            <label>Team Name</label>
-            <input name="team" placeholder="Texas Insanity">
-
-            <label>Jersey Color</label>
-            <select name="team1_color">
-                <option value="">Auto / Not Sure</option>
-                <option value="white">White</option>
-                <option value="black">Black</option>
-                <option value="red">Red</option>
-                <option value="blue">Blue</option>
-                <option value="green">Green</option>
-                <option value="yellow">Yellow / Gold</option>
-                <option value="gray">Gray</option>
-            </select>
-
-            <label>Roster</label>
-            <textarea name="roster" rows="7" placeholder="1 Ava Reynolds&#10;2 Mia Carter&#10;3 Harper Collins"></textarea>
+        <div class="sidebar-footer">
+            AI Photo Intelligence
         </div>
+    </aside>
 
-        <div class="team-box two-team-only hidden">
-            <h2>Team 2</h2>
+    <main class="main-panel">
 
-            <label>Team Name</label>
-            <input name="team2" placeholder="Opponent">
+        <a class="back" href="/">← Dashboard</a>
 
-            <label>Jersey Color</label>
-            <select name="team2_color">
-                <option value="">Auto / Not Sure</option>
-                <option value="white">White</option>
-                <option value="black">Black</option>
-                <option value="red">Red</option>
-                <option value="blue">Blue</option>
-                <option value="green">Green</option>
-                <option value="yellow">Yellow / Gold</option>
-                <option value="gray">Gray</option>
-            </select>
+        <section class="wizard-hero">
+            <p class="eyebrow">New Processing Job</p>
+            <h1>Upload photos for AI sorting.</h1>
+            <p>Create a game, add team details, upload photos, and send them to DiamondVision.</p>
+        </section>
 
-            <label>Roster</label>
-            <textarea name="roster2" rows="7" placeholder="1 Emma Brooks&#10;2 Olivia Parker&#10;3 Sophia Bennett"></textarea>
+        {% if not processor_available %}
+        <div class="warning-card">
+            Cloud processing is active. Local processor is not required on Render.
         </div>
+        {% endif %}
 
-        <label>Photos</label>
-        <div class="upload-box">
-            <input
-                id="photo-input"
-                type="file"
-                name="photos"
-                multiple
-                required
-                accept="image/jpeg,image/png,.jpg,.jpeg,.png,.nef"
-            >
-            <div id="file-count" class="file-count">No files selected</div>
-        </div>
+        <form class="wizard-card" method="POST" enctype="multipart/form-data">
 
-        <button type="submit">
-            START PROCESSING
-        </button>
+            <div class="wizard-steps">
+                <span class="active">1 Game</span>
+                <span>2 Teams</span>
+                <span>3 Photos</span>
+                <span>4 Process</span>
+            </div>
 
-    </form>
+            <section class="wizard-section">
+                <div class="wizard-section-title">
+                    <span>01</span>
+                    <div>
+                        <h2>Game details</h2>
+                        <p>Name this job so you can find it later.</p>
+                    </div>
+                </div>
 
-</div>
+                <label>Game or Tournament Name</label>
+                <input name="tournament" placeholder="Texas Glory Showcase" required>
+            </section>
 
-<div class="bottom-nav">
-    <a href="/">
-        🏠
-        <span>Home</span>
-    </a>
+            <section class="wizard-section">
+                <div class="wizard-section-title">
+                    <span>02</span>
+                    <div>
+                        <h2>Sorting mode</h2>
+                        <p>Choose whether DiamondVision should organize one team or two.</p>
+                    </div>
+                </div>
 
-    <a class="active" href="/new">
-        ➕
-        <span>Upload</span>
-    </a>
+                <div class="mode-cards">
+                    <label class="mode-card selected" data-mode-card="single">
+                        <input type="radio" name="job_mode" value="single" checked>
+                        <strong>Single Team</strong>
+                        <p>Best for one roster and one set of player folders.</p>
+                    </label>
 
-    <a href="/more">
-        ☰
-        <span>More</span>
-    </a>
+                    <label class="mode-card" data-mode-card="two_team">
+                        <input type="radio" name="job_mode" value="two_team">
+                        <strong>Two-Team Mode</strong>
+                        <p>Sort photos into two teams with separate rosters.</p>
+                    </label>
+                </div>
+            </section>
+
+            <section class="wizard-section">
+                <div class="wizard-section-title">
+                    <span>03</span>
+                    <div>
+                        <h2>Team information</h2>
+                        <p>Paste rosters as jersey number followed by player name.</p>
+                    </div>
+                </div>
+
+                <div class="team-box">
+                    <h2>Team 1</h2>
+
+                    <label>Team Name</label>
+                    <input name="team" placeholder="Texas Insanity">
+
+                    <label>Jersey Color</label>
+                    <select name="team1_color">
+                        <option value="">Auto / Not Sure</option>
+                        <option value="white">White</option>
+                        <option value="black">Black</option>
+                        <option value="red">Red</option>
+                        <option value="blue">Blue</option>
+                        <option value="green">Green</option>
+                        <option value="yellow">Yellow / Gold</option>
+                        <option value="gray">Gray</option>
+                    </select>
+
+                    <label>Roster</label>
+                    <textarea name="roster" rows="7" placeholder="1 Ava Reynolds&#10;2 Mia Carter&#10;3 Harper Collins"></textarea>
+                </div>
+
+                <div class="team-box two-team-only hidden">
+                    <h2>Team 2</h2>
+
+                    <label>Team Name</label>
+                    <input name="team2" placeholder="Opponent">
+
+                    <label>Jersey Color</label>
+                    <select name="team2_color">
+                        <option value="">Auto / Not Sure</option>
+                        <option value="white">White</option>
+                        <option value="black">Black</option>
+                        <option value="red">Red</option>
+                        <option value="blue">Blue</option>
+                        <option value="green">Green</option>
+                        <option value="yellow">Yellow / Gold</option>
+                        <option value="gray">Gray</option>
+                    </select>
+
+                    <label>Roster</label>
+                    <textarea name="roster2" rows="7" placeholder="1 Emma Brooks&#10;2 Olivia Parker&#10;3 Sophia Bennett"></textarea>
+                </div>
+            </section>
+
+            <section class="wizard-section">
+                <div class="wizard-section-title">
+                    <span>04</span>
+                    <div>
+                        <h2>Upload photos</h2>
+                        <p>Select game photos. DiamondVision will process them in the cloud.</p>
+                    </div>
+                </div>
+
+                <label class="drop-zone" for="photo-input">
+                    <strong>Choose photos</strong>
+                    <p>JPG, PNG, or NEF files supported</p>
+                    <span id="file-count">No files selected</span>
+                </label>
+
+                <input
+                    id="photo-input"
+                    class="hidden-file-input"
+                    type="file"
+                    name="photos"
+                    multiple
+                    required
+                    accept="image/jpeg,image/png,.jpg,.jpeg,.png,.nef"
+                >
+            </section>
+
+            <div class="wizard-submit">
+                <div>
+                    <strong>Ready to process?</strong>
+                    <p>Photos will upload to Dropbox and process on RunPod Serverless.</p>
+                </div>
+                <button type="submit">Start Processing</button>
+            </div>
+
+        </form>
+
+    </main>
+
 </div>
 
 <script>
 const input = document.getElementById("photo-input");
 const counter = document.getElementById("file-count");
-const mode = document.getElementById("job-mode");
+const modeCards = document.querySelectorAll("[data-mode-card]");
 const twoTeamBlocks = document.querySelectorAll(".two-team-only");
 
 input.addEventListener("change", function(){
@@ -141,9 +200,15 @@ input.addEventListener("change", function(){
             : count + " files selected";
 });
 
-mode.addEventListener("change", function(){
-    twoTeamBlocks.forEach(block => {
-        block.classList.toggle("hidden", mode.value !== "two_team");
+modeCards.forEach(card => {
+    card.addEventListener("click", function(){
+        modeCards.forEach(c => c.classList.remove("selected"));
+        card.classList.add("selected");
+
+        const mode = card.getAttribute("data-mode-card");
+        twoTeamBlocks.forEach(block => {
+            block.classList.toggle("hidden", mode !== "two_team");
+        });
     });
 });
 </script>
