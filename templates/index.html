@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>DiamondVision</title>
+    <title>DiamondVision App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="/static/style.css">
@@ -16,70 +16,60 @@
     </div>
 
     <div class="small-label">
-        AI Photo Sorting for Sports Photographers
+        AI-powered photo sorting for tournament and sports photographers
     </div>
 
-    <a class="hero-button" href="/new">
-        + START NEW JOB
-    </a>
+    <div class="launch-card">
+        <h1>Upload. Process. Deliver.</h1>
+        <p>
+            Import game photos, let DiamondVision sort them by quality, team, and player,
+            then review and deliver results faster.
+        </p>
+
+        <a class="hero-button" href="/new">
+            START PHOTO UPLOAD
+        </a>
+
+        <a class="secondary-button" href="https://diamondvisionsite.org">
+            Back to Website
+        </a>
+    </div>
 
     {% if not processor_available %}
     <div class="warning-card">
-        Viewer mode available. Processing engine not loaded.
+        Cloud processing is enabled. Local processor is not loaded on Render.
     </div>
     {% endif %}
 
     {% if tournaments %}
-    <a class="cover-card" href="/tournament/{{ tournaments[0].name }}">
-
-        {% if tournaments[0].cover %}
-        <img src="{{ tournaments[0].cover }}">
-        {% else %}
-        <div class="cover-placeholder">📸</div>
-        {% endif %}
-
-        <div class="cover-overlay">
-            <strong>{{ tournaments[0].name }}</strong>
-            <span>{{ tournaments[0].best }} best shots · {{ tournaments[0].players }} players</span>
-        </div>
-
-    </a>
-    {% endif %}
-
     <div class="section-row">
-        <h2>Recent Tournaments</h2>
-        <span>{{ tournaments|length }} Events</span>
+        <h2>Recent Jobs</h2>
+        <span>{{ tournaments|length }} total</span>
     </div>
 
     {% for t in tournaments %}
-
     <a class="big-card" href="/tournament/{{ t.name }}">
-
         <div class="thumb">
-
             {% if t.cover %}
             <img src="{{ t.cover }}">
             {% else %}
             📸
             {% endif %}
-
         </div>
 
         <div>
             <strong>{{ t.name }}</strong>
-            <p>{{ t.best }} Best Shots • {{ t.players }} Players</p>
+            <p>{{ t.best }} best shots • {{ t.players }} players</p>
         </div>
 
         <div class="chevron">›</div>
-
     </a>
-
     {% endfor %}
+    {% endif %}
 
 </div>
 
 <div class="bottom-nav">
-
     <a class="active" href="/">
         🏠
         <span>Home</span>
@@ -87,31 +77,14 @@
 
     <a href="/new">
         ➕
-        <span>Import</span>
+        <span>Upload</span>
     </a>
-
-    <span>
-        👥
-        <small>Teams</small>
-    </span>
-
-    <span>
-        ⭐
-        <small>Best</small>
-    </span>
 
     <a href="/more">
         ☰
         <span>More</span>
     </a>
-
 </div>
-
-<script>
-if ("serviceWorker" in navigator){
-
-}
-</script>
 
 </body>
 </html>
