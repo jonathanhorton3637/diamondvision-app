@@ -202,10 +202,20 @@ def build_tournament_info(name):
             if os.path.isdir(os.path.join(players_path, d))
         ])
 
+    total_photos = 0
+
+    if os.path.exists(path):
+        for root, _, files in os.walk(path):
+            total_photos += len([
+                f for f in files
+                if f.lower().endswith(IMAGE_EXTENSIONS)
+            ])
+
     return {
         "name": name,
         "best": count_images(best_path),
         "players": players_count,
+        "photos": total_photos,
         "cover": cover_url
     }
 
