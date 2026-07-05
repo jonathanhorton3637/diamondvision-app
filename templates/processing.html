@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#5634f5">
     <link rel="stylesheet" href="/static/style.css">
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "GLTFLoader": "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js"
+        }
+    }
+    </script>
 </head>
 <body>
 
@@ -47,12 +56,12 @@
         <section class="processing-layout-v4">
 
             <div class="ai-softball-card">
-                <div class="ai-softball-scene">
-                    <img
-                        class="ai-softball-image"
-                        src="/static/ai-softball-purple.png"
-                        alt="DiamondVision AI softball"
-                    >
+                <div class="ai-softball-scene three-scene">
+                    <canvas id="softball-canvas"></canvas>
+                    <div class="three-overlay">
+                        <div class="three-ring"></div>
+                        <div class="three-ring second"></div>
+                    </div>
                 </div>
 
                 <div class="processing-scoreboard">
@@ -121,6 +130,105 @@
 
 </div>
 
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "GLTFLoader";
+
+let softballModel = null;
+let animationSpeed = 0.008;
+let completionMode = false;
+
+const canvas = document.getElementById("softball-canvas");
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+camera.position.set(0, 0.6, 5.2);
+
+const renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: true
+});
+
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 0);
+
+const ambient = new THREE.AmbientLight(0xffffff, 1.4);
+scene.add(ambient);
+
+const purpleLight = new THREE.PointLight(0xb35cff, 6, 12);
+purpleLight.position.set(2.5, 2.5, 3);
+scene.add(purpleLight);
+
+const rimLight = new THREE.PointLight(0x7c3aed, 5, 10);
+rimLight.position.set(-3, 0.5, 2);
+scene.add(rimLight);
+
+const greenLight = new THREE.PointLight(0x22c55e, 0, 12);
+greenLight.position.set(0, 2, 3);
+scene.add(greenLight);
+
+const loader = new GLTFLoader();
+
+loader.load(
+    "/static/models/softball.glb",
+    function(gltf){
+        softballModel = gltf.scene;
+
+        softballModel.scale.set(1.8, 1.8, 1.8);
+        softballModel.rotation.x = 0.18;
+        softballModel.rotation.y = -0.4;
+
+        scene.add(softballModel);
+    },
+    undefined,
+    function(error){
+        console.error("Could not load softball model:", error);
+    }
+);
+
+function resizeRenderer(){
+    const parent = canvas.parentElement;
+    const width = parent.clientWidth;
+    const height = parent.clientHeight;
+
+    renderer.setSize(width, height, false);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+}
+
+window.addEventListener("resize", resizeRenderer);
+resizeRenderer();
+
+let t = 0;
+
+function animate(){
+    requestAnimationFrame(animate);
+    t += 0.01;
+
+    if(softballModel){
+        softballModel.rotation.y += completionMode ? 0.004 : animationSpeed;
+        softballModel.rotation.x = 0.18 + Math.sin(t * 1.4) * 0.05;
+        softballModel.position.y = Math.sin(t * 1.8) * 0.08;
+    }
+
+    purpleLight.intensity = completionMode ? 1.5 : 5.5 + Math.sin(t * 3) * 1.2;
+    greenLight.intensity = completionMode ? 6 + Math.sin(t * 3) * 1.2 : 0;
+
+    renderer.render(scene, camera);
+}
+
+animate();
+
+function setAnimationProgress(percent){
+    animationSpeed = 0.006 + (percent / 100) * 0.025;
+}
+window.setAnimationProgress = setAnimationProgress;
+window.setAnimationComplete = function(){
+    completionMode = true;
+};
+</script>
+
 <script>
 function setStage(stage){
     document.querySelectorAll(".stage").forEach(s => {
@@ -154,6 +262,10 @@ function updateStatus(){
             document.getElementById("done").innerText = data.done || 0;
             document.getElementById("total").innerText = data.total || 0;
 
+            if(window.setAnimationProgress){
+                window.setAnimationProgress(percent);
+            }
+
             const lower = msg.toLowerCase();
 
             if(lower.includes("queued") || lower.includes("waiting")){
@@ -175,11 +287,18 @@ function updateStatus(){
             }
 
             if(data.complete){
+                setStage(5);
+                if(window.setAnimationComplete){
+                    window.setAnimationComplete();
+                }
+
                 document.getElementById("message").innerText = "Ready to review.";
                 document.getElementById("results-button").classList.remove("hidden");
+
                 setTimeout(function(){
                     window.location.href = document.getElementById("results-button").href;
                 }, 1800);
+
                 return;
             }
 

@@ -1913,3 +1913,148 @@ body[data-processing-stage="5"] .ai-softball-image{
     }
 }
 
+
+/* DiamondVision 4.1 real 3D softball processing scene */
+
+.three-scene{
+    position:relative;
+    min-height:540px !important;
+    background:
+        radial-gradient(circle at center,rgba(126,34,206,.28),transparent 34%),
+        radial-gradient(circle at bottom,rgba(168,85,247,.16),transparent 38%),
+        #030610 !important;
+}
+
+#softball-canvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:3;
+}
+
+.three-overlay{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:2;
+}
+
+.three-overlay::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        radial-gradient(circle at 30% 45%,rgba(216,83,255,.18),transparent 12%),
+        radial-gradient(circle at 75% 30%,rgba(168,85,247,.18),transparent 10%),
+        repeating-linear-gradient(
+            105deg,
+            transparent 0 20px,
+            rgba(216,83,255,.18) 21px,
+            transparent 23px
+        );
+    opacity:.85;
+    animation:threeEnergyFlow 2.2s linear infinite;
+}
+
+.three-ring,
+.three-ring.second{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:330px;
+    height:330px;
+    border-radius:50%;
+    transform:translate(-50%,-50%) rotate(0deg);
+    border:4px solid rgba(216,83,255,.72);
+    border-left-color:transparent;
+    border-bottom-color:rgba(216,83,255,.18);
+    box-shadow:
+        0 0 24px rgba(216,83,255,.65),
+        0 0 80px rgba(126,34,206,.34);
+    animation:threeRingSpin 4s linear infinite;
+}
+
+.three-ring.second{
+    width:250px;
+    height:250px;
+    opacity:.45;
+    animation:threeRingSpinReverse 6s linear infinite;
+}
+
+body[data-processing-stage="5"] .three-ring,
+body[data-processing-stage="5"] .three-ring.second{
+    border-color:rgba(34,197,94,.75);
+    border-left-color:transparent;
+    box-shadow:
+        0 0 24px rgba(34,197,94,.65),
+        0 0 80px rgba(34,197,94,.34);
+}
+
+@keyframes threeEnergyFlow{
+    from{
+        transform:translateX(-35px);
+        opacity:.5;
+    }
+    50%{
+        opacity:1;
+    }
+    to{
+        transform:translateX(35px);
+        opacity:.5;
+    }
+}
+
+@keyframes threeRingSpin{
+    from{
+        transform:translate(-50%,-50%) rotate(0deg);
+    }
+    to{
+        transform:translate(-50%,-50%) rotate(360deg);
+    }
+}
+
+@keyframes threeRingSpinReverse{
+    from{
+        transform:translate(-50%,-50%) rotate(360deg);
+    }
+    to{
+        transform:translate(-50%,-50%) rotate(0deg);
+    }
+}
+
+@media(max-width:720px){
+    .three-scene{
+        min-height:380px !important;
+    }
+
+    .three-ring{
+        width:240px;
+        height:240px;
+    }
+
+    .three-ring.second{
+        width:180px;
+        height:180px;
+    }
+}
+
+
+/* Force 3D canvas processing scene */
+.ai-softball-image{
+    display:none !important;
+}
+
+.three-scene{
+    background:
+        radial-gradient(circle at center,rgba(126,34,206,.28),transparent 34%),
+        radial-gradient(circle at bottom,rgba(168,85,247,.16),transparent 38%),
+        #030610 !important;
+}
+
+#softball-canvas{
+    display:block !important;
+    opacity:1 !important;
+    visibility:visible !important;
+}
+
