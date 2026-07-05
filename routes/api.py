@@ -5,12 +5,6 @@ from core.runpod_client import get_status, enabled as runpod_enabled
 from core.dropbox_transport import download_file, unzip_file
 import os
 
-try:
-    from config import DROPBOX_ACCESS_TOKEN, DROPBOX_APP_KEY, DROPBOX_APP_SECRET, DROPBOX_REFRESH_TOKEN
-except Exception:
-    DROPBOX_ACCESS_TOKEN = ""
-
-
 
 def register_api_routes(app):
     @app.route("/health")
@@ -50,10 +44,8 @@ def register_api_routes(app):
                     status["percent"] = max(status.get("percent", 0), 10)
 
                 elif state == "COMPLETED":
-                    status["done"] = status.get("total", 0)
-                    status["percent"] = 100
-                    status["message"] = "RunPod complete"
-                    status["complete"] = True
+                    status["message"] = "RunPod complete, downloading results..."
+                    status["percent"] = 90
 
                     if "output" in rp:
                         status["runpod_output"] = rp["output"]
@@ -70,16 +62,21 @@ def register_api_routes(app):
                             f"{job_name}_results.zip"
                         )
 
-                        download_file(
-                            result_zip_dropbox_path,
-                            result_zip_local
-                        )
+                        download_file(result_zip_dropbox_path, result_zip_local)
 
                         output_folder = os.path.join(ctx.TOURNAMENT_DIR, job_name)
                         unzip_file(result_zip_local, output_folder)
 
+                        status["done"] = status.get("total", 0)
+                        status["percent"] = 100
                         status["message"] = "Processing complete"
+                        status["complete"] = True
                         status["results_downloaded"] = True
+                        status["output_folder"] = output_folder
+                    else:
+                        status["message"] = "RunPod complete, but no results ZIP path was returned"
+                        status["percent"] = 95
+                        status["complete"] = False
 
                 elif state in ("FAILED", "CANCELLED", "TIMED_OUT"):
                     status["complete"] = True
