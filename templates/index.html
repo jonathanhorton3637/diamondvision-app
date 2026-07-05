@@ -1,89 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>DiamondVision App</title>
+    <title>DiamondVision Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-<div class="phone">
+<div class="app-shell">
 
-    <div class="brand">
-        <span>💎</span>
-        DiamondVision
-    </div>
-
-    <div class="small-label">
-        AI-powered photo sorting for tournament and sports photographers
-    </div>
-
-    <div class="launch-card">
-        <h1>Upload. Process. Deliver.</h1>
-        <p>
-            Import game photos, let DiamondVision sort them by quality, team, and player,
-            then review and deliver results faster.
-        </p>
-
-        <a class="hero-button" href="/new">
-            START PHOTO UPLOAD
-        </a>
-
-        <a class="secondary-button" href="https://diamondvisionsite.org">
-            Back to Website
-        </a>
-    </div>
-
-    {% if not processor_available %}
-    <div class="warning-card">
-        Cloud processing is enabled. Local processor is not loaded on Render.
-    </div>
-    {% endif %}
-
-    {% if tournaments %}
-    <div class="section-row">
-        <h2>Recent Jobs</h2>
-        <span>{{ tournaments|length }} total</span>
-    </div>
-
-    {% for t in tournaments %}
-    <a class="big-card" href="/tournament/{{ t.name }}">
-        <div class="thumb">
-            {% if t.cover %}
-            <img src="{{ t.cover }}">
-            {% else %}
-            📸
-            {% endif %}
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>💎</span>
+            <strong>DiamondVision</strong>
         </div>
 
-        <div>
-            <strong>{{ t.name }}</strong>
-            <p>{{ t.best }} best shots • {{ t.players }} players</p>
+        <nav class="sidebar-nav">
+            <a class="active" href="/">Dashboard</a>
+            <a href="/new">New Job</a>
+            <a href="/tournaments">Recent Jobs</a>
+            <a href="/more">More</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            AI Photo Intelligence
+        </div>
+    </aside>
+
+    <main class="main-panel">
+
+        <section class="dashboard-hero">
+            <div>
+                <p class="eyebrow">DiamondVision 4.0</p>
+                <h1>AI photo processing for sports photographers.</h1>
+                <p>
+                    Upload tournament photos, sort them by player and quality,
+                    review the best images, and export client-ready results.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="hero-button" href="/new">Start New Job</a>
+                    <a class="secondary-button" href="https://diamondvisionsite.org">Website</a>
+                </div>
+            </div>
+        </section>
+
+        {% if not processor_available %}
+        <div class="warning-card">
+            Cloud processing is active. Local processor is not required on Render.
+        </div>
+        {% endif %}
+
+        <div class="section-row">
+            <h2>Recent Jobs</h2>
+            <span>{{ tournaments|length }} total</span>
         </div>
 
-        <div class="chevron">›</div>
-    </a>
-    {% endfor %}
-    {% endif %}
+        <div class="job-list">
+            {% for t in tournaments %}
+            <a class="job-row" href="/tournament/{{ t.name }}">
+                <div class="job-cover">
+                    {% if t.cover %}
+                    <img src="{{ t.cover }}">
+                    {% else %}
+                    📸
+                    {% endif %}
+                </div>
 
-</div>
+                <div class="job-main">
+                    <strong>{{ t.name }}</strong>
+                    <p>{{ t.best }} best shots • {{ t.players }} players</p>
+                </div>
 
-<div class="bottom-nav">
-    <a class="active" href="/">
-        🏠
-        <span>Home</span>
-    </a>
+                <div class="job-status">Open →</div>
+            </a>
+            {% endfor %}
+        </div>
 
-    <a href="/new">
-        ➕
-        <span>Upload</span>
-    </a>
+    </main>
 
-    <a href="/more">
-        ☰
-        <span>More</span>
-    </a>
 </div>
 
 </body>
