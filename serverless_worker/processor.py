@@ -501,7 +501,9 @@ def process_mobile_job(input_dir, output_dir, roster_text="", progress_callback=
         img = load_image_fast(file)
 
         if img is None:
-            sorted_path = copy_unique(file, os.path.join(output_dir, "Reject"))
+            # Browser cannot display RAW files directly. If RAW decoding fails,
+            # keep the original in Originals only and write a report row.
+            sorted_path = ""
 
             results.append({
                 "Original File": file,
