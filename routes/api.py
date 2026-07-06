@@ -7,6 +7,46 @@ import os
 import glob
 
 
+IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png")
+
+
+def count_images_recursive(path):
+    if not os.path.exists(path):
+        return 0
+
+    total = 0
+    for root, _, files in os.walk(path):
+        total += len([
+            f for f in files
+            if f.lower().endswith(IMAGE_EXTENSIONS)
+        ])
+    return total
+
+
+def recover_completed_job(job_name, status):
+    output_folder = os.path.join(ctx.TOURNAMENT_DIR, job_name)
+    transport_dir = os.path.join(ctx.BASE_DIR, "DropboxTransport")
+    result_zip_local = os.path.join(transport_dir, f"{job_name}_results.zip")
+
+    if os.path.exists(result_zip_local):
+        os.makedirs(output_folder, exist_ok=True)
+        unzip_file(result_zip_local, output_folder)
+
+    image_count = count_images_recursive(output_folder)
+
+    if image_count > 0:
+        status["done"] = image_count
+        status["total"] = max(status.get("total", 0), image_count)
+        status["percent"] = 100
+        status["message"] = "Processing complete"
+        status["complete"] = True
+        status["results_downloaded"] = True
+        status["output_folder"] = output_folder
+        set_job(job_name, status)
+
+    return status
+
+
 def register_api_routes(app):
     @app.route("/health")
     def health():
@@ -28,7 +68,12 @@ def register_api_routes(app):
             "error": ""
         })
 
-        if runpod_enabled() and status.get("runpod_job_id") and not status.get("complete"):
+        status = recover_completed_job(job_name, status)
+
+        if status.get("complete"):
+            return jsonify(status)
+
+        if runpod_enabled() and status.get("runpod_job_id"):
             try:
                 rp = get_status(status["runpod_job_id"])
                 state = rp.get("status", "").upper()
@@ -44,9 +89,6 @@ def register_api_routes(app):
                     status["message"] = "RunPod complete, downloading results..."
                     status["percent"] = 90
 
-                    if "output" in rp:
-                        status["runpod_output"] = rp["output"]
-
                     output = rp.get("output", {}) or {}
                     result_zip_dropbox_path = output.get("output_zip_dropbox_path")
 
@@ -54,14 +96,20 @@ def register_api_routes(app):
                         transport_dir = os.path.join(ctx.BASE_DIR, "DropboxTransport")
                         os.makedirs(transport_dir, exist_ok=True)
 
-                        result_zip_local = os.path.join(transport_dir, f"{job_name}_results.zip")
+                        result_zip_local = os.path.join(
+                            transport_dir,
+                            f"{job_name}_results.zip"
+                        )
 
                         download_file(result_zip_dropbox_path, result_zip_local)
 
                         output_folder = os.path.join(ctx.TOURNAMENT_DIR, job_name)
                         unzip_file(result_zip_local, output_folder)
 
-                        status["done"] = status.get("total", 0)
+                        image_count = count_images_recursive(output_folder)
+
+                        status["done"] = image_count
+                        status["total"] = max(status.get("total", 0), image_count)
                         status["percent"] = 100
                         status["message"] = "Processing complete"
                         status["complete"] = True
