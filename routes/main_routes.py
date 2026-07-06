@@ -44,18 +44,15 @@ def has_tournament_content(tournament):
     if not os.path.exists(path):
         return False
 
-    required = ["Reports", "Best", "Keep", "Reject", "Duplicates", "BestOfTournament", "Players"]
-
-    for folder in required:
-        if os.path.exists(os.path.join(path, folder)):
-            return True
-
     for root, _, files in os.walk(path):
         for file in files:
             if file.lower().endswith(ctx.IMAGE_EXTENSIONS):
                 return True
 
-    return False
+    report = os.path.join(path, "Reports", "diamondvision_report.csv")
+    metadata = os.path.join(path, "Reports", "metadata.json")
+
+    return os.path.exists(report) or os.path.exists(metadata)
 
 
 def extract_results_zip(zip_path, tournament):
@@ -63,14 +60,11 @@ def extract_results_zip(zip_path, tournament):
     os.makedirs(tournament_path, exist_ok=True)
 
     with zipfile.ZipFile(zip_path, "r") as z:
-        members = z.namelist()
-
-        for member in members:
+        for member in z.namelist():
             if not member or member.endswith("/"):
                 continue
 
             normalized = member.replace("\\", "/").lstrip("/")
-
             parts = normalized.split("/")
 
             if len(parts) > 1 and parts[0] in ("output", "results", tournament):
@@ -86,9 +80,7 @@ def extract_results_zip(zip_path, tournament):
                 shutil.copyfileobj(src, out)
 
     os.makedirs(os.path.join(tournament_path, "Favorites"), exist_ok=True)
-
     log(f"Extracted results zip into Tournament/{tournament}")
-
     return True
 
 
@@ -103,6 +95,8 @@ def local_zip_candidates(tournament, dropbox_zip_path):
     safe = tournament.replace("/", "_").replace("\\", "_")
 
     candidates.extend([
+        os.path.join(ctx.BASE_DIR, "DropboxTransport", f"{safe}_results.zip"),
+        os.path.join(ctx.BASE_DIR, "DropboxTransport", f"{safe}.zip"),
         os.path.join(ctx.DROPBOX_EXPORT_DIR, f"{safe}.zip"),
         os.path.join(ctx.DROPBOX_EXPORT_DIR, f"{safe}_results.zip"),
         os.path.join(ctx.DROPBOX_EXPORT_DIR, f"{safe}_Dropbox_Player_Gallery.zip"),
