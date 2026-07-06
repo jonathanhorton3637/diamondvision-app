@@ -8,8 +8,16 @@ from datetime import datetime
 
 try:
     import rawpy
-except ImportError:
+    RAWPY_AVAILABLE = True
+    RAWPY_IMPORT_ERROR = ""
+    print("[DiamondVision] rawpy successfully imported.")
+    print(f"[DiamondVision] rawpy version: {getattr(rawpy, '__version__', 'unknown')}")
+except Exception as e:
     rawpy = None
+    RAWPY_AVAILABLE = False
+    RAWPY_IMPORT_ERROR = str(e)
+    print("[DiamondVision] rawpy NOT available.")
+    print(f"[DiamondVision] rawpy import error: {RAWPY_IMPORT_ERROR}")
 
 try:
     import easyocr
@@ -43,27 +51,46 @@ def resize_for_speed(img, max_width=1200):
 
 
 def load_image_fast(path):
+    print(f"[DiamondVision] Loading image: {path}")
+
     ext = os.path.splitext(path)[1].lower()
+    print(f"[DiamondVision] Extension detected: {ext}")
 
     if ext == ".nef":
+        print("[DiamondVision] Processing NEF file.")
+
         if rawpy is None:
+            print("[DiamondVision] rawpy unavailable. Cannot decode NEF.")
+            if RAWPY_IMPORT_ERROR:
+                print(f"[DiamondVision] rawpy import error was: {RAWPY_IMPORT_ERROR}")
             return None
 
-        with rawpy.imread(path) as raw:
-            rgb = raw.postprocess(
-                use_camera_wb=True,
-                half_size=True,
-                no_auto_bright=True,
-                output_bps=8
-            )
-            img = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
-            return resize_for_speed(img)
+        try:
+            with rawpy.imread(path) as raw:
+                rgb = raw.postprocess(
+                    use_camera_wb=True,
+                    half_size=True,
+                    no_auto_bright=True,
+                    output_bps=8
+                )
+
+                img = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+
+                print("[DiamondVision] NEF decoded successfully.")
+
+                return resize_for_speed(img)
+
+        except Exception as e:
+            print(f"[DiamondVision] NEF decode failed: {e}")
+            return None
 
     img = cv2.imread(path)
 
     if img is None:
+        print(f"[DiamondVision] cv2 failed to load image: {path}")
         return None
 
+    print("[DiamondVision] Standard image loaded successfully.")
     return resize_for_speed(img)
 
 
@@ -268,11 +295,9 @@ def read_jersey_number(img):
 
                     adjusted_conf = conf
 
-                    # Softball rosters are usually 1–2 digit.
                     if len(digits) <= 2:
                         adjusted_conf += 0.05
 
-                    # Avoid crazy 3-digit false positives unless strong.
                     if len(digits) == 3 and conf < 0.55:
                         continue
 
@@ -338,11 +363,6 @@ def summarize_results(results):
 
 
 def detect_team_from_color(img, team1_color="", team2_color=""):
-    """
-    Simple first-pass jersey color routing.
-    Looks at center torso crop and compares dominant HSV color to selected team colors.
-    If uncertain, defaults to Team 1.
-    """
     if not team1_color and not team2_color:
         return "Team_1"
 
@@ -380,7 +400,6 @@ def detect_team_from_color(img, team1_color="", team2_color=""):
     return "Team_1"
 
 
-
 def roster_match_number(ocr_number, roster):
     if not ocr_number:
         return ""
@@ -388,12 +407,10 @@ def roster_match_number(ocr_number, roster):
     if ocr_number in roster:
         return ocr_number
 
-    # Common OCR issue: reads 8 when jersey is 88, 1 when jersey is 11, etc.
     doubled = ocr_number + ocr_number
     if doubled in roster:
         return doubled
 
-    # Common OCR issue: drops leading/trailing digit.
     possible = []
     for number in roster.keys():
         if ocr_number in number or number in ocr_number:
@@ -404,27 +421,12 @@ def roster_match_number(ocr_number, roster):
 
     return ""
 
+
 def process_mobile_job(input_dir, output_dir, roster_text="", progress_callback=None):
-    """
-    Supports both original single-team mode and new two-team mode.
-
-    Original call:
-        process_mobile_job(input_dir, output_dir, roster_text)
-
-    New call from app.py:
-        process_mobile_job(input_dir, output_dir, job_config)
-
-    job_config:
-        {
-            "mode": "single" or "two_team",
-            "team1": "...",
-            "team1_color": "white",
-            "roster1": "...",
-            "team2": "...",
-            "team2_color": "blue",
-            "roster2": "..."
-        }
-    """
+    print("[DiamondVision] Starting process_mobile_job.")
+    print(f"[DiamondVision] rawpy_available={RAWPY_AVAILABLE}")
+    if not RAWPY_AVAILABLE:
+        print(f"[DiamondVision] rawpy_import_error={RAWPY_IMPORT_ERROR}")
 
     if isinstance(roster_text, dict):
         job_config = roster_text
@@ -487,6 +489,8 @@ def process_mobile_job(input_dir, output_dir, roster_text="", progress_callback=
     files = find_images(input_dir)
     total = len(files)
 
+    print(f"[DiamondVision] Found {total} supported image(s).")
+
     if progress_callback:
         progress_callback(0, total, "Starting DiamondVision...")
 
@@ -501,12 +505,10 @@ def process_mobile_job(input_dir, output_dir, roster_text="", progress_callback=
         img = load_image_fast(file)
 
         if img is None:
-            # Browser cannot display RAW files directly. If RAW decoding fails,
-            # keep the original in Originals only and write a report row.
-            sorted_path = ""
+            print(f"[DiamondVision] Image failed to load/decode. Marking reject: {basename}")
 
             results.append({
-                "Original File": file,
+                "Original File": original_path,
                 "Category": "Reject",
                 "Score": 0,
                 "Duplicate": "No",
@@ -515,7 +517,7 @@ def process_mobile_job(input_dir, output_dir, roster_text="", progress_callback=
                 "OCR Raw": "",
                 "Assigned Player": "Unknown",
                 "Assigned Team": "Unknown",
-                "Sorted Path": sorted_path,
+                "Sorted Path": "",
                 "Player Path": ""
             })
 
@@ -723,8 +725,10 @@ def process_mobile_job(input_dir, output_dir, roster_text="", progress_callback=
     with open(metadata_path, "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=2)
 
-
     if progress_callback:
         progress_callback(total, total, "Complete")
+
+    print("[DiamondVision] process_mobile_job complete.")
+    print(f"[DiamondVision] Summary: {summary}")
 
     return summary
