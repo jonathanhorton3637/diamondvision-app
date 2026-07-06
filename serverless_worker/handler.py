@@ -78,9 +78,19 @@ def handler(job):
         zip_folder(output_dir, output_zip)
         dropbox_upload(dbx, output_zip, output_zip_dropbox_path)
 
+        try:
+            import rawpy
+            rawpy_available = True
+            rawpy_version = getattr(rawpy, "__version__", "unknown")
+        except Exception as e:
+            rawpy_available = False
+            rawpy_version = str(e)
+
         return {
             "summary": summary,
-            "output_zip_dropbox_path": output_zip_dropbox_path
+            "output_zip_dropbox_path": output_zip_dropbox_path,
+            "rawpy_available": rawpy_available,
+            "rawpy_version": rawpy_version
         }
 
 
